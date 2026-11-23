@@ -6,7 +6,20 @@
     "banner-1795456798742-9083.jpg",
     "banner-1795456806983-3913.jpg"
   ],
-  "quick": null,
+  "quick": [
+    {
+      "label": "Telegram",
+      "url": "https://t.me/Siamfff55"
+    },
+    {
+      "label": "Join Group",
+      "url": ""
+    },
+    {
+      "label": "YouTube",
+      "url": ""
+    }
+  ],
   "images": null,
   "prod": null,
   "texts": null
