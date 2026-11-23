@@ -24,5 +24,7 @@
     "pop": "img-pop-1795456963249.jpg"
   },
   "prod": null,
-  "texts": null
+  "texts": {
+    "siteName": "Siam top of my"
+  }
 }
