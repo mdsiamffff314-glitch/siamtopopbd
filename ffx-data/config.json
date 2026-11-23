@@ -20,7 +20,9 @@
       "url": ""
     }
   ],
-  "images": null,
+  "images": {
+    "pop": "img-pop-1795456963249.jpg"
+  },
   "prod": null,
   "texts": null
 }
