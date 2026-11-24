@@ -21,7 +21,9 @@ firebase.auth().onAuthStateChanged(function(user){
   } else {
     window.isLoggedIn = false;
   }
-});    
+  var lb = document.getElementById('emailLoginBox');
+  if(lb) lb.style.display = user ? 'none' : '';
+});
   </script>
 <meta name="theme-color" content="#ffffff">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
