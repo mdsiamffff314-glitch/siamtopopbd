@@ -13,6 +13,15 @@
   appId: "1:751273978600:web:f09e0d9d1f57298a4e375d",
   measurementId: "G-R754063LBH"
 };
+firebase.initializeApp(firebaseConfig);
+
+firebase.auth().onAuthStateChanged(function(user){
+  if(user){
+    window.isLoggedIn = true;
+  } else {
+    window.isLoggedIn = false;
+  }
+});    
   </script>
 <meta name="theme-color" content="#ffffff">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -2242,7 +2251,7 @@ render();
   var LOGIN_URL='#';
 
   var BALANCE=0;          // ইউজারের ওয়ালেট ব্যালেন্স (ব্যাকএন্ড থেকে বসান)
-  var HOWTO_URL='#';      // "কিভাবে অর্ডার করবেন?" ভিডিও/গাইডের লিংক
+  var HOWTO_URL='https://youtu.be/5AljsY7DG2E?si=ySHMmXu4KhFv50Qx;      // "কিভাবে অর্ডার করবেন?" ভিডিও/গাইডের লিংক
 
   var sel={name:'',price:0,pay:'Wallet Pay'};
   var toastEl=document.getElementById('toast'), tt;
