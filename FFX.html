@@ -2173,9 +2173,9 @@ render();
 // ==========================================
 (function(){
   // লগইন সিস্টেম যুক্ত করলে এটা true করে দিন
-  var isLoggedIn=false;
+  
   var LOGIN_URL='#';
-
+var isLoggedIn = window.isLoggedIn || false;
   var home=document.getElementById('homeView'), ff=document.getElementById('ffView'), foot=document.getElementById('siteFooter');
   var sel={name:'',price:0,pay:'Wallet Pay'};
   var toastEl=document.getElementById('toast'), tt;
