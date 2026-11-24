@@ -794,6 +794,20 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 .ac-mi.out{color:#b42318}
 .ac-mi.out .mi{background:#fee4e2;color:#b42318}
 </style>
+
+<style>
+
+/* Siam Top Up: mobile payment details */
+.st-payment-box{margin-top:12px;padding:14px;border:1.5px solid #d8e4fb;border-radius:16px;background:linear-gradient(135deg,#f4f8ff,#fff);color:#172554}
+.st-payment-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;margin-bottom:8px}
+.st-payment-number{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#fff;border:1px dashed #9bb6eb;border-radius:12px}
+.st-payment-number strong{font-size:18px;letter-spacing:.5px;color:#123b91}
+.st-payment-copy{border:0;border-radius:9px;padding:9px 12px;background:#2457d6;color:#fff;font:700 12px inherit;cursor:pointer;white-space:nowrap}
+.st-payment-note{font-size:12px;line-height:1.55;color:#52617e;margin:9px 0 0}
+.st-payment-methods{font-size:12px;font-weight:700;color:#2457d6;margin-top:7px}
+@media(max-width:380px){.st-payment-number strong{font-size:16px}.st-payment-copy{padding:8px 9px}}
+
+</style>
 </head>
 <body>
 
@@ -3112,5 +3126,60 @@ render();
   sync();
 })();
 </script>
+
+<script>
+/* Siam Top Up payment number + copy helper.
+   This displays payment instructions only; it does not verify payments or submit orders. */
+(function(){
+  'use strict';
+  var PAYMENT_NUMBER = '01889277663';
+  function makePanel(){
+    var box = document.createElement('section');
+    box.className = 'st-payment-box';
+    box.innerHTML =
+      '<div class="st-payment-title">💳 নগদ / বিকাশ পেমেন্ট</div>' +
+      '<div class="st-payment-number"><strong></strong><button type="button" class="st-payment-copy">নম্বর কপি</button></div>' +
+      '<div class="st-payment-methods">নগদ অথবা বিকাশ — Send Money</div>' +
+      '<p class="st-payment-note">পেমেন্ট করার আগে অর্ডারের পরিমাণ মিলিয়ে নিন। টাকা পাঠানোর পর Transaction ID সংরক্ষণ করুন।</p>';
+    box.querySelector('strong').textContent = PAYMENT_NUMBER;
+    box.querySelector('button').addEventListener('click', function(){
+      var btn = this;
+      function copied(){
+        btn.textContent = 'কপি হয়েছে ✓';
+        setTimeout(function(){ btn.textContent = 'নম্বর কপি'; }, 1600);
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(PAYMENT_NUMBER).then(copied, function(){ fallbackCopy(); });
+      } else {
+        fallbackCopy();
+      }
+      function fallbackCopy(){
+        var input = document.createElement('textarea');
+        input.value = PAYMENT_NUMBER;
+        input.style.position = 'fixed';
+        input.style.opacity = '0';
+        document.body.appendChild(input);
+        input.select();
+        try { document.execCommand('copy'); copied(); }
+        catch(e) { btn.textContent = PAYMENT_NUMBER; }
+        document.body.removeChild(input);
+      }
+    });
+    return box;
+  }
+  function install(){
+    document.querySelectorAll('.po-grid').forEach(function(grid){
+      if (grid.nextElementSibling && grid.nextElementSibling.classList.contains('st-payment-box')) return;
+      grid.insertAdjacentElement('afterend', makePanel());
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', install);
+  } else {
+    install();
+  }
+})();
+</script>
+
 </body>
 </html>
