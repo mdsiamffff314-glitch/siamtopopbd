@@ -18,6 +18,9 @@ const ADMIN_PASSWORD = process.env['FFX-PASS'] || process.env.FFX_PASS || '';
 const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(ROOT_DIR, 'data'));
 const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+const WALLET_FILE = path.join(DATA_DIR, 'wallet-ledger.json');
+const FIREBASE_PROJECT_ID = 'siam-123fd';
+let firebaseCerts = null, firebaseCertExpiry = 0;
 const SESSION_MS = 12 * 60 * 60 * 1000;
 const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
 
@@ -644,8 +647,94 @@ function removeUpload(name) {
   if (name && SAFE_FILE.test(name)) fs.unlink(path.join(UPLOAD_DIR, name), function () {});
 }
 
+
+function loadWalletLedger() {
+  try { const x = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf8')); return x && typeof x === 'object' && Array.isArray(x.deposits) ? x : { deposits: [] }; }
+  catch (_) { return { deposits: [] }; }
+}
+function saveWalletLedger(ledger) {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
+  const tmp = WALLET_FILE + '.tmp';
+  fs.writeFileSync(tmp, JSON.stringify(ledger, null, 2), { mode: 0o600 });
+  fs.renameSync(tmp, WALLET_FILE);
+}
+async function getFirebaseCerts() {
+  if (firebaseCerts && Date.now() < firebaseCertExpiry) return firebaseCerts;
+  const r = await fetch('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
+  if (!r.ok) throw new Error('Firebase token যাচাই করা যাচ্ছে না');
+  firebaseCerts = await r.json();
+  const cc = r.headers.get('cache-control') || '';
+  const m = /max-age=(\d+)/i.exec(cc);
+  firebaseCertExpiry = Date.now() + Math.max(300, m ? Number(m[1]) : 3600) * 1000;
+  return firebaseCerts;
+}
+async function verifyFirebaseUser(req) {
+  const h = req.headers.authorization || '';
+  const token = h.startsWith('Bearer ') ? h.slice(7).trim() : '';
+  const parts = token.split('.');
+  if (parts.length !== 3) throw new Error('লগইন করুন');
+  let head, payload;
+  try { head = JSON.parse(Buffer.from(parts[0], 'base64url').toString()); payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString()); }
+  catch (_) { throw new Error('লগইন টোকেন সঠিক নয়'); }
+  if (head.alg !== 'RS256' || !head.kid) throw new Error('লগইন টোকেন সঠিক নয়');
+  const now = Math.floor(Date.now() / 1000);
+  if (payload.aud !== FIREBASE_PROJECT_ID || payload.iss !== 'https://securetoken.google.com/' + FIREBASE_PROJECT_ID || !payload.sub || payload.sub !== payload.user_id || payload.exp <= now || payload.iat > now + 60 || payload.auth_time > now + 60) throw new Error('লগইন সেশন শেষ হয়েছে');
+  const certs = await getFirebaseCerts();
+  const cert = certs[head.kid];
+  if (!cert) { firebaseCertExpiry = 0; throw new Error('লগইন টোকেন যাচাই ব্যর্থ'); }
+  const ok = crypto.verify('RSA-SHA256', Buffer.from(parts[0] + '.' + parts[1]), cert, Buffer.from(parts[2], 'base64url'));
+  if (!ok) throw new Error('লগইন টোকেন যাচাই ব্যর্থ');
+  return { uid: payload.sub, email: String(payload.email || '').slice(0, 180), name: String(payload.name || '').slice(0, 100) };
+}
+function walletBalance(ledger, uid) {
+  return ledger.deposits.filter(x => x.uid === uid && x.status === 'approved').reduce((n, x) => n + Number(x.amount), 0);
+}
+async function walletApi(req, res, pathname) {
+  let user;
+  try { user = await verifyFirebaseUser(req); }
+  catch (e) { return sendJson(res, 401, { error: e.message || 'লগইন করুন' }); }
+  const ledger = loadWalletLedger();
+  if (req.method === 'GET' && pathname === '/api/wallet/me') {
+    const mine = ledger.deposits.filter(x => x.uid === user.uid).sort((a,b) => b.createdAt - a.createdAt);
+    return sendJson(res, 200, { balance: walletBalance(ledger, user.uid), deposits: mine.map(({id, amount, method, trx, status, createdAt, reviewedAt, note}) => ({id, amount, method, trx, status, createdAt, reviewedAt, note})) });
+  }
+  if (req.method === 'POST' && pathname === '/api/wallet/deposit') {
+    const body = await readJson(req, 8192);
+    const amount = Math.round(Number(body.amount) * 100) / 100;
+    const method = String(body.method || '').toLowerCase();
+    const trx = String(body.trx || '').trim().toUpperCase().replace(/\s+/g, '');
+    if (!Number.isFinite(amount) || amount < 10 || amount > 50000) return sendJson(res, 400, { error: '১০ থেকে ৫০,০০০ টাকার মধ্যে পরিমাণ দিন' });
+    if (!['bkash','nagad'].includes(method)) return sendJson(res, 400, { error: 'পেমেন্ট মাধ্যম নির্বাচন করুন' });
+    if (!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res, 400, { error: 'সঠিক Transaction ID দিন' });
+    if (ledger.deposits.some(x => x.trx === trx)) return sendJson(res, 409, { error: 'এই Transaction ID আগে জমা দেওয়া হয়েছে' });
+    const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, amount, method, trx, status: 'pending', createdAt: Date.now(), reviewedAt: null, note: '' };
+    ledger.deposits.push(rec);
+    saveWalletLedger(ledger);
+    return sendJson(res, 201, { ok: true, message: 'আবেদন জমা হয়েছে। অ্যাডমিন যাচাই করার পর ব্যালেন্স যোগ হবে।', deposit: { id: rec.id, amount, method, trx, status: rec.status, createdAt: rec.createdAt } });
+  }
+  return sendJson(res, 404, { error: 'Not found' });
+}
+
 async function handleApi(req, res, pathname) {
   try {
+    if (pathname.startsWith('/api/wallet/')) return await walletApi(req, res, pathname);
+    if (pathname.startsWith('/api/admin/deposits')) {
+      if (!isAuthed(req)) return sendJson(res, 401, { error: 'অ্যাডমিন লগইন করুন' });
+      const ledger = loadWalletLedger();
+      if (req.method === 'GET' && pathname === '/api/admin/deposits') return sendJson(res, 200, { deposits: ledger.deposits.slice().sort((a,b) => b.createdAt-a.createdAt) });
+      const m = /^\/api\/admin\/deposits\/([a-f0-9]+)\/(approve|reject)$/.exec(pathname);
+      if (req.method === 'POST' && m) {
+        const item = ledger.deposits.find(x => x.id === m[1]);
+        if (!item) return sendJson(res, 404, { error: 'আবেদন পাওয়া যায়নি' });
+        if (item.status !== 'pending') return sendJson(res, 409, { error: 'এই আবেদন আগেই নিষ্পত্তি হয়েছে' });
+        const body = await readJson(req, 4096);
+        item.status = m[2] === 'approve' ? 'approved' : 'rejected';
+        item.reviewedAt = Date.now(); item.note = String(body.note || '').trim().slice(0, 200);
+        saveWalletLedger(ledger);
+        return sendJson(res, 200, { ok: true, deposit: item, balance: walletBalance(ledger, item.uid) });
+      }
+      return sendJson(res, 404, { error: 'Not found' });
+    }
     if (req.method === 'POST' && pathname === '/api/admin/login') {
       if (!ADMIN_PASSWORD) return sendJson(res, 503, { error: 'Render এ FFX-PASS সেট করা নেই। Environment এ FFX-PASS যোগ করে আবার Deploy করুন।' });
       const ip = clientIp(req);
@@ -833,6 +922,11 @@ function handle(req, res) {
 
   if (pathname.startsWith('/api/')) {
     return handleApi(req, res, pathname);
+  }
+
+  if (pathname === '/admin-money' || pathname === '/admin-money/') {
+    const f = path.join(ROOT_DIR, 'admin-money.html');
+    return fs.readFile(f, function (err, data) { if (err) { res.writeHead(404); return res.end('admin-money.html পাওয়া যায়নি'); } res.writeHead(200, { 'Content-Type': MIME_TYPES['.html'], 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow', 'X-Frame-Options': 'DENY' }); res.end(data); });
   }
 
   if (pathname === '/admin' || pathname === '/admin/') {
