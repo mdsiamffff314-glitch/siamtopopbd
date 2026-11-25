@@ -159,6 +159,11 @@ header{position:sticky;top:0;z-index:40;background:#ffffff;border-bottom:1px sol
 .avatar .av-inner svg{width:21px;height:21px;stroke-width:2.2}
 .login-trigger{display:inline-flex;align-items:center;justify-content:center;padding:7px 14px;border-radius:999px;background:#fff0f6;border:1px solid #f9a8d4;color:#db2777;font-size:13px;font-weight:800;box-shadow:0 4px 12px rgba(219,39,119,.12);cursor:pointer}
 .login-trigger:active{transform:scale(.97)}
+#avBtn{padding:4px 8px;min-width:42px;min-height:42px;border:0}
+#avBtn.is-user{padding:3px;background:linear-gradient(135deg,#8b5cf6,#2563eb);border-radius:50%;width:44px;height:44px;box-shadow:0 5px 14px rgba(37,99,235,.25)}
+#avBtn.is-user #avGooglePhoto{display:block!important;width:38px!important;height:38px!important}
+#avBtn.is-user #avLoginText{display:none}
+
 #loginUserSummary{display:none;align-items:center;gap:12px;padding:12px;margin:0 0 14px;border:1px solid #fbcfe8;border-radius:14px;background:#fff7fb}
 #loginUserSummary img{width:52px;height:52px;border-radius:50%;object-fit:cover;border:2px solid #f472b6}
 #loginUserSummary .lus-name{font-weight:800;color:#172554;font-size:15px}
@@ -851,6 +856,16 @@ html,body,.pk,.po,.btn,.pay,.q,.card,.nav a,.pv-back{touch-action:manipulation}
 #acView .ac-menu{margin-top:14px}
 @media(max-width:390px){.ac-stats-four{grid-template-columns:repeat(2,minmax(0,1fr))}.ac-stats-four .ac-st b{font-size:17px}}
 
+
+/* Account drawer and Google avatar behaviour */
+.acc-top{align-items:stretch;padding:calc(18px + env(safe-area-inset-top,0px)) 14px 16px}
+.acc-user{padding:10px;border:1px solid #fbcfe8;border-radius:16px;background:#fff7fb}
+.acc-top .acc-x{display:grid;position:absolute;right:12px;top:calc(12px + env(safe-area-inset-top,0px));place-items:center;width:38px;height:38px;border:0;border-radius:50%;background:#f1f5f9;color:#334155;z-index:2}
+.acc-top .acc-x svg{width:18px;height:18px}
+.acc-list{padding:8px 0}
+.acc-it{min-height:58px;padding:15px 16px;font-size:15px}
+.acc-sup{margin:14px auto 0;min-width:190px}
+
 </style>
 
 <style>
@@ -922,7 +937,10 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     <a class="logo" href="#"><img src="Main logo.jpg" alt="Nickname" data-site-logo></a>
     <div class="hr">
       <a class="wallet" href="#"><svg class="i"><use href="#wal"/></svg>0৳</a>
-      <a class="login-trigger" href="#login" id="avBtn" aria-label="Login">Login</a>
+      <button class="login-trigger" type="button" href="#login" id="avBtn" aria-label="Login">
+        <span id="avLoginText">Login</span>
+        <img id="avGooglePhoto" alt="Google account" style="display:none;width:30px;height:30px;border-radius:50%;object-fit:cover">
+      </button>
     </div>
   </div>
 </header>
@@ -2221,11 +2239,15 @@ startFirebase();
     var n = USER.name ? USER.name.trim() : '';
     document.getElementById('accName').textContent = USER.loggedIn && n ? 'Hi, ' + n : 'Hi, Guest';
     document.getElementById('accMail').textContent = USER.loggedIn && USER.email ? USER.email : 'লগইন করে অর্ডার করুন';
-    if (USER.avatar) {
-      var box = document.getElementById('accAv');
-      box.innerHTML = '';
-      var im = document.createElement('img'); im.src = USER.avatar; im.alt = 'Profile';
-      box.appendChild(im);
+    var box = document.getElementById('accAv');
+    if(box){
+      if(USER.avatar){
+        box.innerHTML = '';
+        var im = document.createElement('img'); im.src = USER.avatar; im.alt = 'Profile';
+        box.appendChild(im);
+      }else{
+        box.innerHTML = '<svg class="i"><use href="#user"/></svg>';
+      }
     }
     var summary = document.getElementById('loginUserSummary');
     var photo = document.getElementById('loginUserPhoto');
@@ -2241,7 +2263,20 @@ startFirebase();
         if (userEmail) userEmail.textContent = USER.email || '';
       }
     }
+    var headBtn=document.getElementById('avBtn');
+    var headText=document.getElementById('avLoginText');
+    var headPhoto=document.getElementById('avGooglePhoto');
+    if(headBtn){
+      headBtn.classList.toggle('is-user',!!USER.loggedIn);
+      headBtn.setAttribute('aria-label',USER.loggedIn?'Open account menu':'Login');
+      if(headText) headText.textContent=USER.loggedIn?'':'Login';
+      if(headPhoto){
+        if(USER.loggedIn && USER.avatar){headPhoto.src=USER.avatar;headPhoto.style.display='block';}
+        else{headPhoto.removeAttribute('src');headPhoto.style.display='none';}
+      }
+    }
     var lo = document.getElementById('accLo');
+    lo.style.display=USER.loggedIn?'none':'inline-flex';
     lo.querySelector('span').textContent = USER.loggedIn ? 'Logout' : 'Login';
     lo.querySelector('use').setAttribute('href', USER.loggedIn ? '#a-power' : '#a-in');
     lo.onclick = function(){
@@ -2297,7 +2332,8 @@ render();
   }
   document.getElementById('avBtn').addEventListener('click', function(e){
     e.preventDefault();
-    openLogin();
+    if (USER.loggedIn) openAcc();
+    else openLogin();
   });
   document.getElementById('loginClose').onclick=closeLogin;
   loginPanel.addEventListener('click',function(e){if(e.target===loginPanel)closeLogin();});
@@ -2311,14 +2347,25 @@ render();
   if (navAcc) navAcc.addEventListener('click', function(e){ e.preventDefault(); closeAcc(); location.hash = 'account'; });
 
   // মেনু আইটেমে ক্লিক: এখানে নিজের পেজের লিংক বসান
-  var PAGES = { account:'#', orders:'#', codes:'#', transaction:'#', addmoney:'#' };
+  var PAGES = {
+    account:'#account',
+    orders:'#my-orders',
+    codes:'#my-codes',
+    transaction:'#my-transaction',
+    contact:'#contact-us'
+  };
   document.querySelectorAll('.acc-it[data-go]').forEach(function(a){
     a.addEventListener('click', function(e){
+      e.preventDefault();
       var go = a.getAttribute('data-go');
-      if (go === 'account') { e.preventDefault(); return; }
-      var u = PAGES[go];
-      if (u && u !== '#') { e.preventDefault(); location.href = u; }
-      else e.preventDefault();
+      if(go==='addmoney'){
+        closeAcc();
+        var add=document.querySelector('nav.nav a.add');
+        if(add) add.click();
+        return;
+      }
+      var u=PAGES[go];
+      if(u){closeAcc();location.hash=u.slice(1);}
     });
   });
 
