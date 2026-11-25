@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="bn">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
   <script>
@@ -2070,7 +2071,23 @@ function startFirebase(){
     else { USER.loggedIn = false; USER.name = ''; USER.email = ''; USER.avatar = ''; }
     if(typeof render === 'function'){ try{ render(); }catch(e){} }
   });
-  window.doGoogleLogin = function(){ var p = new firebase.auth.GoogleAuthProvider(); auth.signInWithRedirect(p).catch(function(e){ alert(e.message); }); };
+  // Recover Google redirect sign-in results on page load.
+  auth.getRedirectResult().then(function(result){
+    if(result && result.user){ USER.loggedIn = true; USER.name = result.user.displayName || ''; USER.email = result.user.email || ''; USER.avatar = result.user.photoURL || ''; }
+  }).catch(function(e){
+    if(e && e.code && e.code !== 'auth/no-auth-event') console.warn('Google redirect sign-in:', e.code, e.message);
+  });
+  window.doGoogleLogin = function(){
+    var p = new firebase.auth.GoogleAuthProvider();
+    p.setCustomParameters({prompt:'select_account'});
+    auth.signInWithPopup(p).then(function(result){
+      if(result && result.user){ USER.loggedIn = true; USER.name = result.user.displayName || ''; USER.email = result.user.email || ''; USER.avatar = result.user.photoURL || ''; if(typeof render === 'function'){ try{render();}catch(e){} } }
+    }).catch(function(e){
+      if(e && (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment' || e.code === 'auth/web-storage-unsupported')){
+        auth.signInWithRedirect(p).catch(function(err){ alert('Google Login: '+(err.message || err.code)); });
+      } else { alert('Google Login: '+(e.message || e.code)); }
+    });
+  };
   window.doGoogleLogout = function(){ auth.signOut(); };
   window.doEmailSignup = function(){
   var e = document.getElementById('loginEmail').value;
