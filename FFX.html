@@ -2945,7 +2945,7 @@ var isLoggedIn = window.isLoggedIn || false;
     if(location.hash==='#account'){ panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
     applyNav();
   }
-  function go(e){ e.preventDefault(); e.stopImmediatePropagation(); location.hash='account'; sync(); }
+  function go(e){ e.preventDefault(); e.stopImmediatePropagation(); panel.classList.remove('show'); panel.setAttribute('aria-hidden','true'); document.body.style.overflow=''; location.hash='account'; sync(); }
   if(navLinks[4]) navLinks[4].addEventListener('click',go,true);
   var accIt=document.querySelector('.acc-it[data-go="account"]');
   if(accIt) accIt.addEventListener('click',go,true);
@@ -3300,7 +3300,18 @@ var isLoggedIn = window.isLoggedIn || false;
 
 
 <style>
-#walletDepositModal{position:fixed;inset:0;z-index:99999;background:#f5f7fc;display:none;overflow:auto;color:#172033;font-family:inherit}
+#walletDepositModal{position:fixed;inset:0;z-index:99999;background:radial-gradient(ellipse at 12% 8%,rgba(143,55,255,.30),transparent 34%),radial-gradient(ellipse at 92% 32%,rgba(0,196,255,.20),transparent 30%),linear-gradient(145deg,#10152f 0%,#171b3b 48%,#24134a 100%);display:none;overflow:auto;color:#172033;font-family:inherit}
+#walletDepositModal:before{content:"";position:fixed;inset:-35%;pointer-events:none;background:conic-gradient(from 0deg,transparent 0 25%,rgba(155,80,255,.10) 32%,transparent 42%,rgba(0,208,255,.08) 58%,transparent 70%);filter:blur(30px);animation:wfAurora 18s linear infinite}
+@keyframes wfAurora{to{transform:rotate(360deg)}}
+#walletDepositModal .wf-wrap{position:relative;z-index:1}
+#walletDepositModal .wf-top button{background:#ffffffeb;box-shadow:0 8px 24px #05091f55}
+#walletDepositModal .wf-brand{color:#fff;text-shadow:0 2px 15px #9c5cff}
+#walletDepositModal .wf-hero{background:linear-gradient(115deg,#092f43 0%,#3a1b78 56%,#7824df 100%);box-shadow:0 18px 45px #070b285c;border:1px solid #ffffff25}
+#walletDepositModal .wf-card{background:linear-gradient(145deg,#fff,#f7f8ff);border:1px solid #ffffffb8;box-shadow:0 18px 42px #05091f40}
+#walletDepositModal .wf-method-banner{background:linear-gradient(100deg,#0754b8,#5630b5);box-shadow:0 10px 28px #08102e55}
+#walletDepositModal .wf-method{transition:transform .18s ease,box-shadow .18s ease}
+#walletDepositModal .wf-method:active{transform:scale(.97)}
+@media(prefers-reduced-motion:reduce){#walletDepositModal:before{animation:none}}
 #walletDepositModal.show{display:block}
 #walletDepositModal [hidden]{display:none!important}
 .wf-wrap{width:min(100%,760px);min-height:100%;margin:auto;padding:14px 16px 32px}
@@ -3447,11 +3458,7 @@ var isLoggedIn = window.isLoggedIn || false;
   }catch(e){}
  }
  function openWallet(){
-  if(!currentUser()){
-   alert('Add Money করতে আগে Login করুন');
-   if(typeof window.doGoogleLogin==='function')window.doGoogleLogin();
-   return;
-  }
+  /* Amount and payment-method screens are public; login is checked only when submitting the deposit request. */
   amount=0;selectedMethod='bkash';
   document.getElementById('wdAmount').value='';
   document.getElementById('wdTrx').value='';
@@ -3515,6 +3522,9 @@ var isLoggedIn = window.isLoggedIn || false;
  /* Keep the existing profile UI unchanged; only intercept its Add Money actions. */
  var addButton=document.getElementById('acAdd');
  if(addButton)addButton.onclick=function(event){if(event)event.preventDefault();openWallet();};
+ /* Bottom-center PLUS / Add Money navigation */
+ var bottomNav=document.querySelectorAll('nav.nav a');
+ if(bottomNav[2])bottomNav[2].addEventListener('click',function(event){event.preventDefault();event.stopPropagation();openWallet();},true);
  document.querySelectorAll('.acc-it[data-go="addmoney"]').forEach(function(link){
   link.addEventListener('click',function(event){
    event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();openWallet();
