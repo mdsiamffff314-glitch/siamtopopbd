@@ -14,7 +14,6 @@
   measurementId: "G-R754063LBH"
 };
 firebase.initializeApp(firebaseConfig);
-
 firebase.auth().onAuthStateChanged(function(user){
   if(user){
     window.isLoggedIn = true;
