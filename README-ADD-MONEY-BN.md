@@ -26,3 +26,10 @@
 - `node --check server.js` দিয়ে server syntax পরীক্ষা করুন।
 - Firebase-এ Email/Google sign-in সক্রিয় ও domain Authorized domains-এ যোগ থাকতে হবে।
 - লগইন করা ব্যবহারকারী Add Money ফর্মে আবেদন পাঠাবে। অ্যাডমিন Pending আবেদন যাচাই করে Approve/Reject করবে।
+
+## নতুন Add Money ডিজাইন
+- Profile পেজের আগের ডিজাইন অপরিবর্তিত রাখা হয়েছে।
+- Add Money থেকে Amount → bKash/Nagad নির্বাচন → আলাদা নির্দেশনা → Transaction ID জমা—এই ধাপগুলো করা হয়েছে।
+- bKash ও Nagad উভয় পেজে পেমেন্ট নম্বর `01889277663` দেখানো হয়।
+- পেমেন্ট আবেদন Pending থাকে; অ্যাডমিন আসল লেনদেন যাচাই করে Approve করলে তবেই Wallet balance বাড়ে।
+- ওয়েবসাইট কখনো bKash/Nagad PIN বা OTP চাইবে না।

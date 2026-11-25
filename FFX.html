@@ -3228,21 +3228,233 @@ var isLoggedIn = window.isLoggedIn || false;
 
 
 <style>
-#walletDepositModal{position:fixed;inset:0;z-index:99999;background:#10182899;display:none;align-items:center;justify-content:center;padding:16px}#walletDepositModal.show{display:flex}.wd-card{width:min(100%,430px);background:#fff;border-radius:18px;padding:18px;color:#172033;box-shadow:0 20px 60px #0003}.wd-card h2{margin:0 0 8px;font-size:20px}.wd-card p{font-size:13px;line-height:1.55;color:#58657b}.wd-card label{display:block;font-size:13px;font-weight:700;margin:12px 0 5px}.wd-card input,.wd-card select{width:100%;padding:12px;border:1px solid #d5ddeb;border-radius:10px;font:inherit;background:#fff}.wd-actions{display:flex;gap:8px;margin-top:14px}.wd-actions button{flex:1;border:0;border-radius:10px;padding:12px;font-weight:800;background:#2457d6;color:#fff}.wd-actions .wd-cancel{background:#eef2f8;color:#344054}.wd-msg{font-size:13px;color:#2457d6;margin-top:10px;min-height:18px}.wd-number{background:#f3f6ff;padding:10px;border-radius:10px;font-weight:800;color:#2457d6}
+#walletDepositModal{position:fixed;inset:0;z-index:99999;background:#f5f7fc;display:none;overflow:auto;color:#172033;font-family:inherit}
+#walletDepositModal.show{display:block}
+#walletDepositModal [hidden]{display:none!important}
+.wf-wrap{width:min(100%,760px);min-height:100%;margin:auto;padding:14px 16px 32px}
+.wf-top{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px}
+.wf-top button{border:0;background:#fff;border-radius:12px;width:42px;height:42px;font-size:24px;color:#65748b}
+.wf-brand{font-weight:900;color:#7516db;font-size:17px}
+.wf-hero{border-radius:20px;padding:25px 21px;color:#fff;background:linear-gradient(115deg,#163c4a,#432080 65%,#7418d5);margin-bottom:15px;box-shadow:0 10px 25px #4c16851c}
+.wf-kicker{font-size:10px;letter-spacing:1px;font-weight:800;opacity:.9}
+.wf-hero h2{font-size:27px;line-height:1.12;margin:12px 0 8px}
+.wf-hero p{font-size:12px;opacity:.88;margin:0}
+.wf-card{background:#fff;border-radius:20px;padding:19px;margin:14px 0;box-shadow:0 8px 25px #24324b0b}
+.wf-card h3{font-size:17px;margin:0 0 7px}
+.wf-sub{font-size:12px;color:#7b8495;margin:0 0 18px}
+.wf-label{display:block;font-size:11px;font-weight:800;color:#778195;margin:12px 0 7px}
+.wf-input{width:100%;box-sizing:border-box;border:1px solid #e1e5ed;background:#fbfcfe;border-radius:12px;padding:15px;font:inherit;font-size:15px;color:#172033;outline:none}
+.wf-input:focus{border-color:#8d40e9;box-shadow:0 0 0 3px #8d40e91a}
+.wf-primary{width:100%;border:0;border-radius:13px;padding:15px 12px;margin-top:14px;background:linear-gradient(100deg,#8120e5,#a85de9);color:#fff;font-weight:800;font-size:14px}
+.wf-primary:disabled{opacity:.6}
+.wf-benefits{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.wf-benefits div{background:#f6f3fb;border-radius:12px;padding:13px 5px;text-align:center;font-size:11px;color:#7d718c}
+.wf-benefits b{display:block;color:#8120d8;font-size:14px;margin-bottom:4px}
+.wf-safe{background:#effaf5;border-radius:12px;padding:13px;margin-top:14px;color:#39765a;font-size:11px;line-height:1.55}
+.wf-method-banner{background:#0754b8;color:#fff;border-radius:12px;text-align:center;padding:16px 10px;font-size:16px;font-weight:800;margin:18px 0}
+.wf-methods{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.wf-method{border:1px solid #e8ebf2;background:#fff;border-radius:15px;min-height:105px;padding:15px 10px;font-weight:900;font-size:23px;box-shadow:0 5px 15px #17203308}
+.wf-method small{display:block;font-size:11px;color:#8b94a4;font-weight:500;margin-top:8px}
+.wf-method.bk{color:#d12b75}.wf-method.ng{color:#df3b2d}
+.wf-method:active{transform:scale(.99)}
+.wf-pay-brand{background:#fff;border-radius:15px;padding:17px;text-align:center;font-size:23px;font-weight:900;margin:0 0 13px}
+.wf-pay-brand.bk{color:#c51d67}.wf-pay-brand.ng{color:#df302e}
+.wf-pay-summary{background:#fff;border-radius:12px;padding:14px;color:#697991;font-size:22px;font-weight:900;margin:12px 0}
+.wf-pay-box{border-radius:16px;padding:19px;color:#fff;margin:12px 0;background:#c72572}
+.wf-pay-box.ng{background:#e21d28}
+.wf-pay-box h3{text-align:center;color:#fff;font-size:19px;margin:0 0 16px}
+.wf-number{background:#fff;color:#27344b;border-radius:10px;padding:12px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-weight:900}
+.wf-copy{border:0;border-radius:8px;background:#8d124e;color:#fff;padding:9px 12px;font-weight:800;white-space:nowrap}
+.wf-pay-box.ng .wf-copy{background:#a70d19}
+.wf-steps{padding:0;margin:16px 0 0;list-style:none}
+.wf-steps li{margin:13px 0;line-height:1.55;font-size:13px}
+.wf-steps li:before{content:"•";font-size:22px;font-weight:900;margin-right:9px}
+.wf-back{border:0;background:transparent;color:#6e35bb;font-weight:800;padding:8px 0 14px}
+.wf-error{font-size:13px;line-height:1.5;color:#a51e39;margin-top:12px;min-height:18px}
+@media(max-width:420px){.wf-wrap{padding:11px 11px 26px}.wf-hero{padding:22px 17px}.wf-hero h2{font-size:24px}.wf-card{padding:16px}.wf-pay-box{padding:16px}}
 </style>
-<div id="walletDepositModal" aria-hidden="true"><section class="wd-card"><h2>ওয়ালেটে টাকা যোগ</h2><p>নিচের নম্বরে Send Money করুন। এরপর সঠিক পরিমাণ ও Transaction ID জমা দিন। অ্যাডমিন পেমেন্ট যাচাই করে Approve করলে ব্যালেন্স যোগ হবে।</p><div class="wd-number" style="display:flex;align-items:center;justify-content:space-between;gap:8px"><span>বিকাশ নম্বর: <b id="wdPayNumber">01889277663</b></span><button type="button" id="wdCopy" style="border:0;border-radius:8px;padding:8px 10px;background:#e2136e;color:#fff;font-weight:700">নম্বর কপি</button></div><div style="background:#fff4d6;border:1px solid #f5d98b;border-radius:10px;padding:10px;margin-top:10px;color:#7a5200;font-size:13px;line-height:1.55"><b>সতর্কবার্তা:</b> বিকাশ থেকে এই নম্বরে Send Money করুন। সঠিক টাকা পাঠানোর পর Transaction ID লিখে আবেদন জমা দিন। Admin টাকা যাচাই করে অনুমোদন দিলে তবেই ব্যালেন্স যোগ হবে। PIN/OTP কাউকে দেবেন না।</div><label for="wdMethod">পেমেন্ট মাধ্যম</label><select id="wdMethod"><option value="bkash">বিকাশ</option><option value="nagad">নগদ</option></select><label for="wdAmount">টাকার পরিমাণ (৳)</label><input id="wdAmount" type="number" min="10" max="50000" step="1" placeholder="যেমন 100"><label for="wdTrx">Transaction ID</label><input id="wdTrx" maxlength="30" placeholder="TrxID লিখুন"><div class="wd-msg" id="wdMsg"></div><div class="wd-actions"><button class="wd-cancel" type="button" id="wdClose">বন্ধ</button><button type="button" id="wdSubmit">আবেদন জমা দিন</button></div></section></div>
+
+<div id="walletDepositModal" aria-hidden="true">
+ <div class="wf-wrap">
+  <div class="wf-top">
+   <button type="button" id="wfClose" aria-label="বন্ধ করুন">×</button>
+   <div class="wf-brand">● BOT TOPUP</div><span style="width:42px"></span>
+  </div>
+
+  <!-- STEP 1: AMOUNT -->
+  <section id="wfAmountPage">
+   <div class="wf-hero"><div class="wf-kicker">⚡ INSTANT & SECURE</div><h2>Add Money to<br>BOT TOPUP</h2><p>Fast, protected wallet recharge for uninterrupted top-ups.</p></div>
+   <div class="wf-card">
+    <h3>▣ Enter Amount</h3><p class="wf-sub">Type the amount you want to add.</p>
+    <label class="wf-label" for="wdAmount">AMOUNT</label>
+    <input class="wf-input" id="wdAmount" type="number" inputmode="decimal" min="10" max="50000" step="1" placeholder="৳  Enter amount">
+    <div class="wf-safe">✓ Amount will be added to your BOT TOPUP wallet after payment verification.</div>
+    <button class="wf-primary" type="button" id="wfContinue">▣ &nbsp; Add Money Securely →</button>
+    <div class="wf-benefits"><div><b>ϟ</b>Instant<br>Quick balance update</div><div><b>♙</b>Secure<br>Protected payment</div><div><b>◉</b>Support<br>Help when needed</div></div>
+    <div class="wf-safe">✓ <b>100% Safe & Secure</b><br>Payment is reviewed before wallet credit. Never share your PIN or OTP on this website.</div>
+   </div>
+  </section>
+
+  <!-- STEP 2: PAYMENT METHOD -->
+  <section id="wfMethodPage" hidden>
+   <button class="wf-back" type="button" id="wfBackAmount">← Back</button>
+   <div class="wf-pay-brand">Auto payment</div>
+   <div class="wf-method-banner">মোবাইল ব্যাংকিং</div>
+   <div class="wf-card">
+    <div class="wf-methods">
+     <button class="wf-method bk" type="button" data-method="bkash">bKash<small>বিকাশ</small></button>
+     <button class="wf-method ng" type="button" data-method="nagad">নগদ<small>Nagad</small></button>
+    </div>
+    <div class="wf-pay-summary">পে করুন ৳ <span id="wfChosenAmount">0</span></div>
+   </div>
+  </section>
+
+  <!-- STEP 3: METHOD-SPECIFIC INSTRUCTIONS -->
+  <section id="wfPaymentPage" hidden>
+   <button class="wf-back" type="button" id="wfBackMethod">← পেমেন্ট মাধ্যম পরিবর্তন</button>
+   <div class="wf-pay-brand bk" id="wfPayBrand">bKash</div>
+   <div class="wf-card">
+    <h3>Auto payment</h3>
+    <div class="wf-pay-summary">৳ <span id="wfPayAmount">0</span></div>
+    <div class="wf-pay-box" id="wfPayBox">
+     <h3>ট্রানজেকশন আইডি দিন</h3>
+     <div class="wf-number"><span id="wfNumber">01889277663</span><button class="wf-copy" type="button" id="wfCopy">কপি</button></div>
+     <ul class="wf-steps">
+      <li id="wfDial">*247# ডায়াল করে আপনার bKash মেনুতে যান অথবা bKash অ্যাপ খুলুন।</li>
+      <li id="wfSend">Send Money-তে ক্লিক করুন।</li>
+      <li>এই নম্বরে টাকা পাঠান: <b>01889277663</b></li>
+      <li>টাকার পরিমাণ: <b id="wfStepAmount">৳0</b></li>
+      <li>পেমেন্ট সম্পন্ন হলে অ্যাপের Transaction ID এখানে লিখুন।</li>
+     </ul>
+    </div>
+    <label class="wf-label" for="wdTrx">TRANSACTION ID</label>
+    <input class="wf-input" id="wdTrx" maxlength="30" autocomplete="off" placeholder="ট্রানজেকশন আইডি লিখুন">
+    <div class="wf-error" id="wdMsg" role="status"></div>
+    <button class="wf-primary" type="button" id="wdSubmit">ভেরিফাই করুন</button>
+    <div class="wf-safe">আপনার আবেদন Pending থাকবে। অ্যাডমিন পেমেন্ট সত্যি পেয়েছেন কি না যাচাই করে Approve করলে ব্যালেন্স যোগ হবে। PIN বা OTP এই ওয়েবসাইটে দেবেন না—শুধু অফিসিয়াল bKash/Nagad অ্যাপেই প্রয়োজন হলে দিন।</div>
+   </div>
+  </section>
+ </div>
+</div>
+
 <script>
 (function(){
-'use strict';var modal=document.getElementById('walletDepositModal'),msg=document.getElementById('wdMsg');if(!modal)return;
-function user(){try{return window.myAuth&&window.myAuth.currentUser}catch(e){return null}}
-async function api(path,body){var u=user();if(!u)throw Error('আগে Login করুন');var tok=await u.getIdToken();var r=await fetch(path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সমস্যা হয়েছে');return j}
-function show(){if(!user()){alert('Add Money করতে আগে Login করুন');if(window.doGoogleLogin)window.doGoogleLogin();return}modal.classList.add('show');modal.setAttribute('aria-hidden','false');msg.textContent='';refresh()}
-function close(){modal.classList.remove('show');modal.setAttribute('aria-hidden','true')}
-async function refresh(){try{var d=await api('/api/wallet/me');var b=document.getElementById('acBal');if(b)b.textContent=Number(d.balance||0).toFixed(2);var w=document.querySelector('.wallet');if(w)w.innerHTML='<svg class="i"><use href="#wal"></use></svg>'+Number(d.balance||0).toFixed(2)+'৳';if(typeof window.renderTransactions==='function')window.renderTransactions((d.deposits||[]).map(function(x){return {number:x.trx,amount:x.amount,status:x.status==='approved'?'Approved':x.status==='rejected'?'Rejected':'Pending'}}));}catch(e){if(e.message!=='আগে Login করুন')msg.textContent=e.message}}
-var oldAdd=document.getElementById('acAdd');if(oldAdd)oldAdd.onclick=function(){show()};document.querySelectorAll('.acc-it[data-go="addmoney"],a.add').forEach(function(el){el.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();show()},true)});
-document.getElementById('wdCopy').onclick=async function(){var n=document.getElementById('wdPayNumber').textContent.trim();try{await navigator.clipboard.writeText(n);msg.textContent='বিকাশ নম্বর কপি হয়েছে: '+n}catch(e){msg.textContent='নম্বরটি কপি করতে পারেননি; হাতে কপি করুন: '+n}};document.getElementById('wdClose').onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});document.getElementById('acRf')?.addEventListener('click',refresh);
-document.getElementById('wdSubmit').onclick=async function(){var btn=this;btn.disabled=true;msg.textContent='জমা হচ্ছে...';try{var d=await api('/api/wallet/deposit',{amount:document.getElementById('wdAmount').value,method:document.getElementById('wdMethod').value,trx:document.getElementById('wdTrx').value});msg.textContent=d.message;document.getElementById('wdAmount').value='';document.getElementById('wdTrx').value='';await refresh()}catch(e){msg.textContent=e.message}finally{btn.disabled=false}};
-if(window.myAuth&&window.myAuth.onAuthStateChanged)window.myAuth.onAuthStateChanged(function(u){if(u)refresh()});
+ 'use strict';
+ var modal=document.getElementById('walletDepositModal');
+ if(!modal)return;
+ var msg=document.getElementById('wdMsg');
+ var PAYMENT_NUMBER='01889277663';
+ var selectedMethod='bkash',amount=0;
+
+ function currentUser(){try{return window.myAuth&&window.myAuth.currentUser}catch(e){return null}}
+ async function api(path,body){
+  var u=currentUser();if(!u)throw Error('আগে Login করুন');
+  var token=await u.getIdToken();
+  var response=await fetch(path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});
+  var data=await response.json().catch(function(){return {}});
+  if(!response.ok)throw Error(data.error||'সমস্যা হয়েছে');
+  return data;
+ }
+ function showPage(id){
+  ['wfAmountPage','wfMethodPage','wfPaymentPage'].forEach(function(key){
+   document.getElementById(key).hidden=key!==id;
+  });
+ }
+ async function refreshWallet(){
+  try{
+   var data=await api('/api/wallet/me');
+   var balance=Number(data.balance||0);
+   var bal=document.getElementById('acBal');if(bal)bal.textContent=balance.toFixed(2);
+   var wallet=document.querySelector('.wallet');
+   if(wallet)wallet.innerHTML='<svg class="i"><use href="#wal"></use></svg>'+balance.toFixed(2)+'৳';
+   if(typeof window.renderTransactions==='function'){
+    window.renderTransactions((data.deposits||[]).map(function(item){
+     return {number:item.trx,amount:item.amount,status:item.status==='approved'?'Approved':item.status==='rejected'?'Rejected':'Pending'};
+    }));
+   }
+  }catch(e){}
+ }
+ function openWallet(){
+  if(!currentUser()){
+   alert('Add Money করতে আগে Login করুন');
+   if(typeof window.doGoogleLogin==='function')window.doGoogleLogin();
+   return;
+  }
+  amount=0;selectedMethod='bkash';
+  document.getElementById('wdAmount').value='';
+  document.getElementById('wdTrx').value='';
+  msg.textContent='';
+  showPage('wfAmountPage');
+  modal.classList.add('show');modal.setAttribute('aria-hidden','false');
+  refreshWallet();
+ }
+ function closeWallet(){
+  modal.classList.remove('show');modal.setAttribute('aria-hidden','true');
+ }
+ function selectMethod(method){
+  selectedMethod=method;
+  var isBkash=method==='bkash';
+  var brand=document.getElementById('wfPayBrand');
+  brand.textContent=isBkash?'bKash':'নগদ';
+  brand.className='wf-pay-brand '+(isBkash?'bk':'ng');
+  document.getElementById('wfPayBox').classList.toggle('ng',!isBkash);
+  document.getElementById('wfDial').textContent=isBkash?
+   '*247# ডায়াল করে আপনার bKash মেনুতে যান অথবা bKash অ্যাপ খুলুন।':
+   '*167# ডায়াল করে আপনার Nagad মেনুতে যান অথবা Nagad অ্যাপ খুলুন।';
+  document.getElementById('wfSend').textContent='Send Money নির্বাচন করুন।';
+  document.getElementById('wfNumber').textContent=PAYMENT_NUMBER;
+  document.getElementById('wfPayAmount').textContent=amount.toFixed(2);
+  document.getElementById('wfStepAmount').textContent='৳'+amount.toFixed(2);
+  document.getElementById('wdTrx').value='';
+  msg.textContent='';
+  showPage('wfPaymentPage');
+ }
+ document.getElementById('wfClose').addEventListener('click',closeWallet);
+ document.getElementById('wfContinue').addEventListener('click',function(){
+  var value=Number(document.getElementById('wdAmount').value);
+  if(!Number.isFinite(value)||value<10||value>50000){alert('১০ থেকে ৫০,০০০ টাকার মধ্যে পরিমাণ লিখুন');return;}
+  amount=Math.round(value*100)/100;
+  document.getElementById('wfChosenAmount').textContent=amount.toFixed(2);
+  showPage('wfMethodPage');
+ });
+ document.getElementById('wfBackAmount').addEventListener('click',function(){showPage('wfAmountPage')});
+ document.getElementById('wfBackMethod').addEventListener('click',function(){showPage('wfMethodPage')});
+ modal.querySelectorAll('.wf-method').forEach(function(button){
+  button.addEventListener('click',function(){selectMethod(button.getAttribute('data-method'))});
+ });
+ document.getElementById('wfCopy').addEventListener('click',async function(){
+  var button=this;
+  try{await navigator.clipboard.writeText(PAYMENT_NUMBER);button.textContent='কপি হয়েছে ✓';}
+  catch(e){msg.textContent='নম্বরটি হাতে কপি করুন: '+PAYMENT_NUMBER;}
+ });
+ document.getElementById('wdSubmit').addEventListener('click',async function(){
+  var button=this,transaction=document.getElementById('wdTrx').value.trim();
+  if(!transaction){msg.textContent='Transaction ID লিখুন';return;}
+  button.disabled=true;msg.textContent='আবেদন জমা হচ্ছে...';
+  try{
+   var result=await api('/api/wallet/deposit',{amount:amount,method:selectedMethod,trx:transaction});
+   msg.textContent=result.message||'আবেদন জমা হয়েছে।';
+   document.getElementById('wdTrx').value='';
+   await refreshWallet();
+  }catch(error){msg.textContent=error.message||'আবেদন জমা হয়নি';}
+  finally{button.disabled=false;}
+ });
+
+ /* Keep the existing profile UI unchanged; only intercept its Add Money actions. */
+ var addButton=document.getElementById('acAdd');
+ if(addButton)addButton.onclick=function(event){if(event)event.preventDefault();openWallet();};
+ document.querySelectorAll('.acc-it[data-go="addmoney"]').forEach(function(link){
+  link.addEventListener('click',function(event){
+   event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();openWallet();
+  },true);
+ });
+ var refreshButton=document.getElementById('acRf');
+ if(refreshButton)refreshButton.addEventListener('click',refreshWallet);
+ modal.addEventListener('click',function(event){if(event.target===modal)closeWallet();});
+ document.addEventListener('keydown',function(event){if(event.key==='Escape'&&modal.classList.contains('show'))closeWallet();});
+ if(window.myAuth&&typeof window.myAuth.onAuthStateChanged==='function'){
+  window.myAuth.onAuthStateChanged(function(user){if(user)refreshWallet();});
+ }
 })();
 </script>
 
