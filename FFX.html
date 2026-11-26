@@ -131,8 +131,10 @@ html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:#2563eb #f0f5ff
 ::-webkit-scrollbar-track{background:#f0f5ff}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#3b82f6,#1d4ed8);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:#1d4ed8}
-body{font-family:Inter,"Noto Sans Bengali",Roboto,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;overflow-x:hidden}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(600px 400px at 90% -5%,rgba(37,99,235,.12),transparent 70%),radial-gradient(500px 500px at -10% 45%,rgba(96,165,250,.14),transparent 70%);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform}
+html{background:#210018}
+body{background:transparent;font-family:Inter,"Noto Sans Bengali",Roboto,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(135deg,rgba(255,105,180,.18),rgba(255,192,220,.16));-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform}
+#siamPinkBgVideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2;pointer-events:none;opacity:.62;filter:saturate(1.12) brightness(1.12)}
 a{color:inherit;text-decoration:none}
 svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 svg.f{width:1em;height:1em;fill:currentColor;stroke:none}
@@ -896,8 +898,24 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   body { min-width:0; }
 }
 </style>
+
+<style id="siam-feature-pack-style">
+/* SIAM feature pack: additive styles only; existing components remain intact */
+:root{--sf-blue:#2563eb;--sf-ink:#172033;--sf-soft:#edf4ff}
+body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle at 8% 18%,rgba(59,130,246,.09),transparent 28%),radial-gradient(circle at 92% 70%,rgba(34,211,238,.08),transparent 30%),linear-gradient(135deg,rgba(255,255,255,.12),transparent 55%);animation:sfGlow 12s ease-in-out infinite alternate}
+@keyframes sfGlow{from{filter:hue-rotate(0deg);opacity:.65}to{filter:hue-rotate(24deg);opacity:1}}
+.sf-search{display:flex;align-items:center;gap:10px;margin:14px 0;padding:12px 15px;border:1px solid #dbe5f5;border-radius:16px;background:#fff;box-shadow:0 8px 22px -18px #1d4ed8}.sf-search input{border:0;outline:0;min-width:0;flex:1;font:600 15px inherit;color:#172033;background:transparent}.sf-search .sf-search-ico{font-size:20px;color:#2563eb}
+.sf-offer{margin:14px 0 18px;padding:15px;border-radius:18px;color:#fff;background:linear-gradient(115deg,#082f75,#1d4ed8 58%,#06b6d4);box-shadow:0 14px 28px -18px #1d4ed8;position:relative;overflow:hidden}.sf-offer:after{content:'✦';position:absolute;right:18px;top:3px;font-size:72px;opacity:.13}.sf-offer strong{display:block;font-size:17px}.sf-offer p{margin:5px 0 9px;font-size:12px;opacity:.9}.sf-offer-row{display:flex;align-items:center;justify-content:space-between;gap:10px}.sf-timer{font-weight:900;letter-spacing:1px;font-variant-numeric:tabular-nums}.sf-offer button,.sf-btn{border:0;border-radius:12px;padding:9px 13px;background:#fff;color:#1746b4;font-weight:800;cursor:pointer}
+.sf-toolbar{display:flex;gap:8px;margin:10px 0 14px;overflow:auto}.sf-tool{white-space:nowrap;border:1px solid #dce6f6;background:#fff;color:#1e3a8a;border-radius:999px;padding:9px 12px;font-weight:750;font-size:12px;box-shadow:0 5px 14px -12px #1d4ed8;cursor:pointer}
+.sf-modal{display:none;position:fixed;inset:0;z-index:9999;background:rgba(10,20,40,.58);align-items:flex-end;justify-content:center;padding:14px}.sf-modal.show{display:flex}.sf-sheet{width:min(100%,560px);max-height:82vh;overflow:auto;background:#f8fbff;border-radius:24px 24px 18px 18px;padding:18px;box-shadow:0 25px 70px #0f172a66}.sf-sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px}.sf-sheet-head h2{margin:0;font-size:20px;color:#172033}.sf-close{width:36px;height:36px;border:0;border-radius:50%;background:#e8effb;font-size:22px;color:#1e3a8a}.sf-card{background:#fff;border:1px solid #e1e9f6;border-radius:16px;padding:14px;margin:10px 0;color:#172033}.sf-card h3{margin:0 0 6px;font-size:15px}.sf-card p{margin:4px 0;color:#64748b;font-size:13px;line-height:1.55}.sf-field{width:100%;box-sizing:border-box;border:1px solid #d6e1f1;border-radius:12px;padding:12px;background:#fff;font:inherit;margin:7px 0}.sf-primary{width:100%;border:0;border-radius:12px;padding:12px;background:linear-gradient(100deg,#2563eb,#1d4ed8);color:#fff;font-weight:850;margin-top:8px}.sf-note{font-size:11px!important;color:#64748b!important}.sf-status{padding:10px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:13px;margin-top:8px}.sf-stars{display:flex;gap:8px;font-size:25px;color:#f59e0b}.sf-stars button{border:0;background:none;color:inherit;font-size:27px;padding:0}.sf-order-timeline{display:flex;gap:6px;margin-top:10px}.sf-order-timeline i{height:6px;flex:1;border-radius:9px;background:#dbeafe}.sf-order-timeline i.on{background:#2563eb}.sf-empty{padding:12px;text-align:center;color:#64748b;font-size:13px}
+@media(prefers-reduced-motion:reduce){body:before{animation:none}}
+</style>
+
 </head>
 <body>
+<video id="siamPinkBgVideo" autoplay muted loop playsinline preload="auto" aria-hidden="true">
+  <source src="background-pink.mp4" type="video/mp4">
+</video>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-6h6v6"/></symbol>
@@ -960,6 +978,13 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
     <a class="q" href="#" data-link="telegram-channel"><span class="ic"><svg class="f"><use href="#tg"/></svg></span><span><small>Support</small><b>Telegram</b></span></a>
     <a class="q" href="#" data-link="telegram-group"><span class="ic"><svg class="f"><use href="#grp"/></svg></span><span><small>Group</small><b>Join Group</b></span></a>
     <a class="q" href="#" data-link="youtube-channel"><span class="ic"><svg class="f"><use href="#yt"/></svg></span><span><small>Channel</small><b>YouTube</b></span></a>
+  </div>
+
+
+  <div class="sf-search" role="search"><span class="sf-search-ico">⌕</span><input id="sfProductSearch" type="search" placeholder="প্রোডাক্ট খুঁজুন... যেমন Weekly, UID, Likes" aria-label="প্রোডাক্ট খুঁজুন"><button type="button" id="sfClearSearch" class="sf-tool">Clear</button></div>
+  <section class="sf-offer" aria-label="Special offer"><strong>⚡ SIAM Special Offers</strong><p>চলতি অফার ও কুপন জানতে আমাদের অফিসিয়াল Telegram চ্যানেল দেখুন।</p><div class="sf-offer-row"><span>Daily offer refresh in</span><span class="sf-timer" id="sfOfferTimer">--:--:--</span><button type="button" id="sfOfferOpen">Offers</button></div></section>
+  <div class="sf-toolbar" aria-label="Quick features">
+    <button class="sf-tool" data-sf-open="notifications">🔔 Notifications</button><button class="sf-tool" data-sf-open="coupon">🎟 Coupon</button><button class="sf-tool" data-sf-open="refer">🎁 Refer & Earn</button><button class="sf-tool" data-sf-open="tracking">📦 Track Order</button><button class="sf-tool" data-sf-open="review">⭐ Review</button>
   </div>
 
   <div class="sec"><h2><em>FREE FIRE TOPUP</em></h2></div>
@@ -1637,6 +1662,9 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 </main>
 
 <div class="toast" id="toast"></div>
+
+<div class="sf-modal" id="sfFeatureModal" aria-hidden="true"><section class="sf-sheet" role="dialog" aria-modal="true" aria-labelledby="sfModalTitle"><div class="sf-sheet-head"><h2 id="sfModalTitle">SIAM TOP UP</h2><button class="sf-close" id="sfModalClose" type="button" aria-label="বন্ধ করুন">×</button></div><div id="sfModalBody"></div></section></div>
+
 
 <footer id="siteFooter">
   <div class="wrap">
@@ -3570,6 +3598,51 @@ if(window.myAuth&&window.myAuth.onAuthStateChanged)window.myAuth.onAuthStateChan
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden) tryStartMusic();
   });
+})();
+</script>
+
+
+<script id="siam-feature-pack-script">
+(function(){
+'use strict';
+var modal=document.getElementById('sfFeatureModal'),body=document.getElementById('sfModalBody'),title=document.getElementById('sfModalTitle');
+if(!modal||!body)return;
+var tg=(window.telegram_channel_link||'https://t.me/Siamfff55');
+function user(){try{return window.myAuth&&window.myAuth.currentUser||null}catch(e){return null}}
+function uid(){var u=user();return u?u.uid:'guest'}
+function storeKey(k){return 'siam_sf_'+k+'_'+uid()}
+function read(k,d){try{var x=JSON.parse(localStorage.getItem(storeKey(k)));return x==null?d:x}catch(e){return d}}
+function write(k,v){try{localStorage.setItem(storeKey(k),JSON.stringify(v));return true}catch(e){return false}}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function open(which){var u=user();if(['refer','review','chat','tracking'].indexOf(which)>=0&&!u){if(window.openSiamLogin)window.openSiamLogin();else alert('আগে Login করুন');return}
+var pages={
+notifications:['Notification Center','<div class="sf-card"><h3>📣 SIAM TOP UP Updates</h3><p>অর্ডার, পেমেন্ট ও নতুন অফারের আপডেট এখানে দেখুন। গুরুত্বপূর্ণ আপডেট পেতে Telegram চ্যানেল ফলো করুন।</p><a class="sf-primary" style="display:block;text-align:center;text-decoration:none" href="'+esc(tg)+'" target="_blank" rel="noopener">Telegram Updates</a></div><div class="sf-card"><h3>Wallet / Deposit</h3><p>আপনার Add Money আবেদনের অবস্থা দেখতে My Transaction পেজ খুলুন।</p><button class="sf-primary" data-sf-go="my-transaction">Transaction History খুলুন</button></div>'],
+offers:['Flash Sale & Special Offers','<div class="sf-card"><h3>⚡ চলতি অফার</h3><p>বর্তমান মূল্য ও ডিসকাউন্ট অর্ডারের আগে প্রোডাক্ট পেজে যাচাই করুন। নতুন অফার ও কুপন কোড অফিসিয়াল Telegram চ্যানেলে প্রকাশ করা হবে।</p><a class="sf-primary" style="display:block;text-align:center;text-decoration:none" href="'+esc(tg)+'" target="_blank" rel="noopener">অফার দেখুন</a><p class="sf-note">এই প্যাকেজে কোনো ভুয়া ডিসকাউন্ট বা স্বয়ংক্রিয় মূল্য পরিবর্তন দেখানো হচ্ছে না।</p></div>'],
+coupon:['Coupon System','<div class="sf-card"><h3>🎟 Coupon Code</h3><p>অ্যাডমিনের দেওয়া কুপন কোড এখানে লিখুন। এই সংস্করণে কোড যাচাই/ডিসকাউন্ট প্রয়োগের সার্ভার API সংযুক্ত না হওয়া পর্যন্ত কোনো ছাড় কার্যকর হবে না।</p><input class="sf-field" id="sfCouponInput" placeholder="আপনার Coupon Code"><button class="sf-primary" id="sfCouponCheck">কুপন যাচাইয়ের অনুরোধ</button><div class="sf-status" id="sfCouponMsg">কুপন প্রয়োগ করতে সাপোর্টে যোগাযোগ করুন।</div><a href="'+esc(tg)+'" target="_blank" rel="noopener">Telegram Support</a></div>'],
+refer:['Refer & Earn','<div class="sf-card"><h3>🎁 Invite Friends</h3><p>আপনার শেয়ার লিংক বন্ধুদের পাঠান। রেফারেল বোনাস চালু করতে অ্যাডমিনের রেফারেল রুল ও সার্ভার-সাইড ক্রেডিট সিস্টেম কনফিগার করতে হবে।</p><input class="sf-field" id="sfReferralLink" readonly><button class="sf-primary" id="sfCopyReferral">লিংক কপি করুন</button><div class="sf-status" id="sfReferralMsg">রেফারেল লিংক তৈরি হয়েছে। বোনাস এখনো স্বয়ংক্রিয়ভাবে ক্রেডিট হয় না।</div></div>'],
+tracking:['Live Order Tracking','<div class="sf-card"><h3>📦 আপনার অর্ডার</h3><p>My Orders-এ বর্তমানে সিস্টেমে পাঠানো অর্ডার ডেটা থাকলে স্ট্যাটাস দেখা যাবে। অর্ডার ডেটা সার্ভারে সংযুক্ত না থাকলে এখানে নতুন ট্র্যাকিং রেকর্ড তৈরি হবে না।</p><button class="sf-primary" data-sf-go="my-orders">My Orders খুলুন</button><div class="sf-order-timeline"><i class="on"></i><i></i><i></i><i></i></div><p class="sf-note">Pending → Processing → Completed / Rejected</p></div>'],
+review:['Rating & Review','<div class="sf-card"><h3>⭐ আপনার মতামত</h3><p>রেটিংটি এই ডিভাইসে সংরক্ষিত হবে; পাবলিক রিভিউ বোর্ডে পাঠানো হবে না।</p><div class="sf-stars" id="sfStars"><button type="button" data-star="1">☆</button><button type="button" data-star="2">☆</button><button type="button" data-star="3">☆</button><button type="button" data-star="4">☆</button><button type="button" data-star="5">☆</button></div><textarea class="sf-field" id="sfReviewText" rows="3" placeholder="আপনার অভিজ্ঞতা লিখুন"></textarea><button class="sf-primary" id="sfReviewSave">রিভিউ সংরক্ষণ</button><div class="sf-status" id="sfReviewMsg">আপনার রেটিং নির্বাচন করুন।</div></div>'],
+chat:['Live Support Chat','<div class="sf-card"><h3>💬 SIAM Support</h3><p>সরাসরি Telegram-এ সাপোর্ট টিমকে মেসেজ করুন। অর্ডার সংক্রান্ত সমস্যায় Order ID ও পেমেন্টের Transaction ID দিন। PIN/OTP কখনো পাঠাবেন না।</p><a class="sf-primary" style="display:block;text-align:center;text-decoration:none" href="'+esc(tg)+'" target="_blank" rel="noopener">চ্যাট শুরু করুন</a></div>']
+};
+var data=pages[which]||pages.notifications;title.textContent=data[0];body.innerHTML=data[1];modal.classList.add('show');modal.setAttribute('aria-hidden','false');
+if(which==='refer'){var u=user(),link=location.origin+location.pathname+'?ref='+encodeURIComponent(u.uid.slice(0,12));document.getElementById('sfReferralLink').value=link;}
+if(which==='coupon'){document.getElementById('sfCouponCheck').onclick=function(){document.getElementById('sfCouponMsg').textContent='কোডটি সাপোর্টে পাঠানো হয়েছে বলে ধরে নেবেন না—এখান থেকে সরাসরি Telegram-এ যোগাযোগ করুন।';location.href='#contact-us';window.open(tg,'_blank','noopener');};}
+if(which==='refer'){document.getElementById('sfCopyReferral').onclick=function(){var x=document.getElementById('sfReferralLink');if(navigator.clipboard)navigator.clipboard.writeText(x.value).then(function(){document.getElementById('sfReferralMsg').textContent='লিংক কপি হয়েছে। বোনাসের জন্য রেফারেল প্রোগ্রাম অ্যাডমিনের মাধ্যমে চালু করতে হবে।'}).catch(function(){x.select();document.execCommand('copy')});else{x.select();document.execCommand('copy')}};}
+if(which==='review'){var rating=0;document.querySelectorAll('[data-star]').forEach(function(b){b.onclick=function(){rating=Number(b.dataset.star);document.querySelectorAll('[data-star]').forEach(function(q){q.textContent=Number(q.dataset.star)<=rating?'★':'☆'})}});document.getElementById('sfReviewSave').onclick=function(){if(!rating){document.getElementById('sfReviewMsg').textContent='আগে রেটিং দিন।';return}var arr=read('reviews',[]);arr.push({rating:rating,text:document.getElementById('sfReviewText').value.slice(0,500),createdAt:Date.now()});write('reviews',arr);document.getElementById('sfReviewMsg').textContent='এই ডিভাইসে রিভিউ সংরক্ষিত হয়েছে। ধন্যবাদ!';};}
+}
+function close(){modal.classList.remove('show');modal.setAttribute('aria-hidden','true')}
+document.getElementById('sfModalClose').onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+document.querySelectorAll('[data-sf-open]').forEach(function(b){b.addEventListener('click',function(){open(b.dataset.sfOpen)})});document.getElementById('sfOfferOpen').onclick=function(){open('offers')};
+body.addEventListener('click',function(e){var b=e.target.closest('[data-sf-go]');if(b){close();location.hash=b.dataset.sfGo}});
+// Search existing product cards without changing their links or purchase logic.
+var search=document.getElementById('sfProductSearch'),clear=document.getElementById('sfClearSearch');if(search){search.addEventListener('input',function(){var q=search.value.trim().toLowerCase();document.querySelectorAll('#homeView .card[data-open]').forEach(function(c){c.style.display=c.textContent.toLowerCase().indexOf(q)>=0?'':'none'})});clear.onclick=function(){search.value='';search.dispatchEvent(new Event('input'))};}
+// Daily countdown is a visual reminder, not a claim that prices automatically change.
+function tick(){var n=new Date(),end=new Date(n);end.setHours(24,0,0,0);var sec=Math.max(0,Math.floor((end-n)/1000)),h=String(Math.floor(sec/3600)).padStart(2,'0'),m=String(Math.floor(sec%3600/60)).padStart(2,'0'),s=String(sec%60).padStart(2,'0');var el=document.getElementById('sfOfferTimer');if(el)el.textContent=h+':'+m+':'+s;}tick();setInterval(tick,1000);
+// Make order tracking entry point available from existing Orders page.
+var orderHead=document.querySelector('#orView .or-top');if(orderHead&&!document.getElementById('sfTrackHint')){var hint=document.createElement('div');hint.id='sfTrackHint';hint.className='sf-card';hint.innerHTML='<h3>📦 Order Status Guide</h3><p>Pending → Processing → Completed / Rejected. অর্ডার আপডেট অ্যাডমিন/অর্ডার সিস্টেম থেকে পাঠানো হলে এখানে দেখাবে।</p>';orderHead.insertAdjacentElement('afterend',hint)}
+// Existing VIP panel is already present in My Account; add clear benefits note without changing rank logic.
+var rank=document.querySelector('#acView .ac-rank-progress');if(rank&&!document.getElementById('sfVipNote')){var note=document.createElement('div');note.id='sfVipNote';note.className='sf-status';note.textContent='VIP Rank: আপনার বর্তমান Bronze/Silver/Gold অগ্রগতি উপরের প্রোফাইল কার্ডে দেখানো হচ্ছে। সুবিধা ও র‍্যাঙ্কের সীমা অ্যাডমিন কনফিগারেশনের ওপর নির্ভরশীল।';rank.appendChild(note)}
+// Wallet transaction history already uses the authenticated wallet API in this project.
 })();
 </script>
 

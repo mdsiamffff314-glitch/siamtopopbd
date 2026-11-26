@@ -33,3 +33,22 @@
 - bKash ও Nagad উভয় পেজে পেমেন্ট নম্বর `01889277663` দেখানো হয়।
 - পেমেন্ট আবেদন Pending থাকে; অ্যাডমিন আসল লেনদেন যাচাই করে Approve করলে তবেই Wallet balance বাড়ে।
 - ওয়েবসাইট কখনো bKash/Nagad PIN বা OTP চাইবে না।
+
+---
+
+## SIAM Feature Pack (added 26 Nov 2026)
+
+The updated `FFX.html` adds an additive feature layer while retaining the existing Firebase login, wallet API, admin pages, product pages, and navigation:
+
+- Smart product search filters the existing product cards without changing their links.
+- Special-offer panel links to the official Telegram channel; its timer is a daily visual countdown only and does not change prices.
+- Notification Center links to existing wallet transaction history and Telegram updates.
+- Coupon panel is a request/entry UI only. A production coupon needs admin-managed coupon records and server-side validation at checkout; no client-side discount is falsely applied.
+- Referral link uses the signed-in Firebase UID as a share identifier. Referral attribution, abuse prevention, and reward crediting still require server-side referral records and admin approval.
+- Order tracking links to the existing My Orders page and explains the statuses. The project currently has a `renderOrders()` display hook but no connected order-creation/order-status API, so live statuses must be connected to the actual order provider/admin workflow.
+- Support chat opens the existing Telegram support channel; this is not an embedded agent chat service.
+- Reviews are stored only in the current browser/device and are not public or sent to an admin database.
+- VIP rank progress and wallet transaction history continue to use the existing account/wallet implementation.
+- Animated gradient ambience is layered behind the existing background video; reduced-motion preference is respected.
+
+Production activation still required for coupon redemption, referral rewards, server notifications, public reviews, live chat inbox, and live order status: implement authenticated server endpoints and corresponding admin controls before advertising these as fully live services.
