@@ -131,10 +131,8 @@ html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:#2563eb #f0f5ff
 ::-webkit-scrollbar-track{background:#f0f5ff}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#3b82f6,#1d4ed8);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:#1d4ed8}
-html{background:#210018}
-body{background:transparent;font-family:Inter,"Noto Sans Bengali",Roboto,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;overflow-x:hidden}
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(135deg,rgba(255,105,180,.18),rgba(255,192,220,.16));-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform}
-#siamPinkBgVideo{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;z-index:-2;pointer-events:none;opacity:.62;filter:saturate(1.12) brightness(1.12)}
+body{font-family:Inter,"Noto Sans Bengali",Roboto,system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(600px 400px at 90% -5%,rgba(37,99,235,.12),transparent 70%),radial-gradient(500px 500px at -10% 45%,rgba(96,165,250,.14),transparent 70%);-webkit-transform:translateZ(0);transform:translateZ(0);will-change:transform}
 a{color:inherit;text-decoration:none}
 svg.i{width:1em;height:1em;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 svg.f{width:1em;height:1em;fill:currentColor;stroke:none}
@@ -900,9 +898,6 @@ html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 </style>
 </head>
 <body>
-<video id="siamPinkBgVideo" autoplay muted loop playsinline preload="auto" aria-hidden="true">
-  <source src="background-pink.mp4" type="video/mp4">
-</video>
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
 <symbol id="home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 21v-6h6v6"/></symbol>
