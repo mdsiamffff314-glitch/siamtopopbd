@@ -3510,14 +3510,16 @@ var isLoggedIn = window.isLoggedIn || false;
 .wd-amount-title p{margin:0;color:#7a8490;font-size:13px}
 .wd-card label{display:block;font-size:13px;font-weight:800;margin:18px 0 8px;color:#68717c;letter-spacing:.04em}
 .wd-card input{width:100%;padding:17px 16px;border:1.5px solid #dfe4e8;border-radius:17px;background:#fbfcfd;font:inherit;font-size:19px;box-sizing:border-box;color:#172033}
-.wd-primary{width:100%;border:0;border-radius:18px;padding:18px;margin-top:22px;background:linear-gradient(100deg,#78dc92,#8eeaa5);color:#fff;font-weight:900;font-size:17px;box-shadow:0 8px 18px rgba(34,197,94,.16)}
+.wd-primary{width:100%;border:0;border-radius:18px;padding:18px;margin-top:22px;background:#b9eac7;color:#fff;font-weight:900;font-size:17px;box-shadow:0 8px 18px rgba(34,197,94,.10);transition:background .18s,box-shadow .18s,transform .18s}.wd-primary.is-ready{background:linear-gradient(100deg,#08b83f,#13d653);box-shadow:0 10px 24px rgba(10,190,70,.30)}.wd-primary:disabled{opacity:.72;cursor:not-allowed}
 .wd-trust{display:grid;grid-template-columns:repeat(3,1fr);margin-top:22px;border:1px solid #d9eee0;border-radius:18px;background:#effaf3;overflow:hidden}
 .wd-trust div{text-align:center;padding:17px 5px;color:#159447;border-right:1px solid #d9eee0}.wd-trust div:last-child{border:0}
 .wd-trust b{display:block;font-size:12px;color:#26352b;margin-top:5px}.wd-trust small{font-size:10px;color:#829087}
 .wd-sub{font-size:14px;line-height:1.65;color:#64748b;margin:0 0 18px}
 .wd-methods{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
 .wd-method{border:1px solid #e8edf0;background:#fff;border-radius:12px;padding:18px 10px;min-height:94px;font-weight:900;font-size:18px;color:#26344d;box-shadow:0 3px 12px rgba(20,40,90,.04)}
-.wd-method span{font-size:24px!important}
+.wd-method span{font-size:24px!important}.wd-method{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}.wd-method img{display:block;width:58px;height:58px;object-fit:contain;border-radius:13px}.wd-method .wd-method-name{font-size:16px;font-weight:900}
+#walletDepositModal .wd-method[data-method="nagad"] img{width:112px;height:56px;object-fit:contain;border-radius:0}
+
 .wd-method:active{transform:scale(.98)}
 .wd-detail-brand{border-radius:16px;padding:20px 12px;text-align:center;background:#fff;margin:8px 0 12px;font-size:23px;font-weight:900;color:#d81b60;box-shadow:0 4px 14px rgba(20,40,90,.04)}
 .wd-warning{border-radius:14px;padding:18px 16px;margin:14px 0;background:#ca2478;border:0;color:#fff;font-size:14px;line-height:1.8}
@@ -3559,9 +3561,9 @@ var isLoggedIn = window.isLoggedIn || false;
    <button type="button" class="wd-back" id="wdBackAmount">⌂　　×</button>
    <p class="wd-sub">পেমেন্ট করার মাধ্যম নির্বাচন করুন</p>
    <div class="wd-methods">
-    <button type="button" class="wd-method" data-method="bkash"><span style="color:#d81b60">bKash</span></button>
-    <button type="button" class="wd-method" data-method="rocket"><span style="color:#84268d">ROCKET<br><small style="font-size:13px">রকেট</small></span></button>
-    <button type="button" class="wd-method" data-method="nagad"><span style="color:#ed171f">নগদ</span></button>
+    <button type="button" class="wd-method" data-method="bkash"><img src="siam-bkash-app-icon.png" alt="bKash app logo"><span class="wd-method-name" style="color:#d81b60">bKash</span></button>
+    <button type="button" class="wd-method" data-method="rocket"><img src="siam-rocket-app-icon.png" alt="Rocket app logo"><span class="wd-method-name" style="color:#84268d">ROCKET · রকেট</span></button>
+    <button type="button" class="wd-method" data-method="nagad"><img src="siam-nagad-app-icon.png" alt="Nagad app logo"><span class="wd-method-name" style="color:#ed171f">নগদ</span></button>
    </div>
   </section>
   <section id="wdStepDetails" hidden>
@@ -3596,9 +3598,10 @@ var modal=document.getElementById('walletDepositModal');if(!modal)return;
 var msg=document.getElementById('wdMsg'),PAYMENT_NUMBER='01889277663',selectedMethod='bkash';
 function user(){try{return window.myAuth&&window.myAuth.currentUser}catch(e){return null}}
 async function api(path,body){var u=user();if(!u)throw Error('আগে Login করুন');var tok=await u.getIdToken();var r=await fetch(path,{method:body===undefined?'GET':'POST',headers:{Authorization:'Bearer '+tok,'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body)});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সমস্যা হয়েছে');return j}
-function show(){if(!user()){alert('Add Money করতে আগে Login করুন');if(window.openSiamLogin)window.openSiamLogin();return}modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.getElementById('wdStepAmount').hidden=false;document.getElementById('wdStepMethod').hidden=true;document.getElementById('wdStepDetails').hidden=true;document.getElementById('wdAmount').value='';document.getElementById('wdTrx').value='';if(msg)msg.textContent=''}
+function show(){if(!user()){alert('Add Money করতে আগে Login করুন');if(window.openSiamLogin)window.openSiamLogin();return}modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.getElementById('wdStepAmount').hidden=false;document.getElementById('wdStepMethod').hidden=true;document.getElementById('wdStepDetails').hidden=true;document.getElementById('wdAmount').value='';updateAmountButton();document.getElementById('wdTrx').value='';if(msg)msg.textContent=''}
 function close(){modal.classList.remove('show');modal.setAttribute('aria-hidden','true')}
 function amount(){var n=Number(document.getElementById('wdAmount').value);if(!Number.isFinite(n)||n<10||n>50000||Math.floor(n)!==n){alert('১০ থেকে ৫০,০০০ টাকার মধ্যে পূর্ণ সংখ্যা লিখুন।');return false}return n}
+var amountInput=document.getElementById('wdAmount'),continueBtn=document.getElementById('wdContinue');function updateAmountButton(){var v=Number(amountInput.value),ok=amountInput.value.trim()!==''&&Number.isFinite(v)&&v>=10&&v<=50000&&Math.floor(v)===v;continueBtn.classList.toggle('is-ready',ok);continueBtn.disabled=!ok}amountInput.addEventListener('input',updateAmountButton);amountInput.addEventListener('change',updateAmountButton);updateAmountButton();
 function choose(method){var n=amount();if(!n)return;selectedMethod=method;document.getElementById('wdStepAmount').hidden=true;document.getElementById('wdStepMethod').hidden=true;document.getElementById('wdStepDetails').hidden=false;document.getElementById('wdBrand').textContent=method==='bkash'?'bKash':method==='nagad'?'নগদ':'ROCKET · রকেট';document.getElementById('wdPayNumber').textContent=PAYMENT_NUMBER;document.getElementById('wdAmountShown').value='৳ '+n;document.getElementById('wdAmountHeading').textContent=n;document.getElementById('wdAmountText').textContent=n;document.getElementById('wdDialInstruction').textContent=method==='bkash'?'*247# ডায়াল করে আপনার bKash মেনুতে যান অথবা bKash অ্যাপ খুলুন।':method==='nagad'?'*167# ডায়াল করে আপনার NAGAD মেনুতে যান অথবা NAGAD অ্যাপ খুলুন।':'*322# ডায়াল করে আপনার Rocket মেনুতে যান অথবা Rocket অ্যাপ খুলুন।';modal.setAttribute('data-method',method);if(msg)msg.textContent=''}
 document.getElementById('wdContinue').onclick=function(){if(!amount())return;document.getElementById('wdStepAmount').hidden=true;document.getElementById('wdStepMethod').hidden=false};
 document.querySelectorAll('.wd-method').forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-method'))})});

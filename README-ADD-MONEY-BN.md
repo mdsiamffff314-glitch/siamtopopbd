@@ -79,3 +79,7 @@ Production activation still required for coupon redemption, referral rewards, se
 
 কোনো আর্থিক সুবিধা বা লাইভ স্টক এই UI আপডেট একা থেকে কৃত্রিমভাবে নিশ্চিত করে না।
 \n\n### পেমেন্ট মাধ্যম আপডেট\n- Add Money পেজে সবুজ Siam Top Up FF wallet banner ও amount card যোগ করা হয়েছে।\n- Payment selection-এ bKash, Nagad ও Rocket আছে; EPS নেই।\n- তিনটি মাধ্যমেই Send Money নির্দেশনা ও Transaction ID verification form আছে।\n- তিনটি মাধ্যমের জন্যই পেমেন্ট নম্বর `01889277663` সেট করা হয়েছে।\n- Rocket deposit method server validation ও Admin Money list-এ যুক্ত হয়েছে।\n
+
+### UI polish (26 Nov 2026)
+- Amount field-এ বৈধ ১০–৫০,০০০ পূর্ণসংখ্যা লিখলে Add Money Securely বাটন উজ্জ্বল সবুজ হয়; ফাঁকা/অবৈধ ইনপুটে muted ও disabled থাকে।
+- bKash, Nagad ও Rocket method card-এ আলাদা branded app-style icon এবং নাম দেখানো হয়।
