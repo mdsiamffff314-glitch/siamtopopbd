@@ -3538,5 +3538,30 @@ if(window.myAuth&&window.myAuth.onAuthStateChanged)window.myAuth.onAuthStateChan
 })();
 </script>
 
+
+<!-- Background music from the supplied video -->
+<audio id="siamBackgroundMusic" autoplay loop playsinline preload="auto">
+  <source src="music.mp3" type="audio/mpeg">
+</audio>
+<script>
+(function () {
+  var music = document.getElementById('siamBackgroundMusic');
+  if (music) {
+    var startMusic = function () {
+      var attempt = music.play();
+      if (attempt && typeof attempt.catch === 'function') {
+        attempt.catch(function () {
+          // Some browsers block sound autoplay until the visitor interacts.
+        });
+      }
+    };
+    startMusic();
+    document.addEventListener('visibilitychange', function () {
+      if (!document.hidden && music.paused) startMusic();
+    });
+  }
+})();
+</script>
+
 </body>
 </html>
