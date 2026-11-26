@@ -3546,20 +3546,30 @@ if(window.myAuth&&window.myAuth.onAuthStateChanged)window.myAuth.onAuthStateChan
 <script>
 (function () {
   var music = document.getElementById('siamBackgroundMusic');
-  if (music) {
-    var startMusic = function () {
-      var attempt = music.play();
-      if (attempt && typeof attempt.catch === 'function') {
-        attempt.catch(function () {
-          // Some browsers block sound autoplay until the visitor interacts.
-        });
-      }
-    };
-    startMusic();
-    document.addEventListener('visibilitychange', function () {
-      if (!document.hidden && music.paused) startMusic();
-    });
+  if (!music) return;
+
+  function tryStartMusic() {
+    if (!music.paused) return;
+    var attempt = music.play();
+    if (attempt && typeof attempt.catch === 'function') {
+      attempt.catch(function () {
+        // Audible autoplay may be blocked until the visitor interacts.
+      });
+    }
   }
+
+  // Try immediately on page load, before any Google sign-in is needed.
+  tryStartMusic();
+
+  // If the browser blocks autoplay, start on the visitor's first interaction
+  // anywhere on the page (including before signing in); no extra button needed.
+  ['pointerdown', 'touchstart', 'keydown', 'click'].forEach(function (eventName) {
+    document.addEventListener(eventName, tryStartMusic, { once: true, capture: true });
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) tryStartMusic();
+  });
 })();
 </script>
 
