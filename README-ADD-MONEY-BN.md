@@ -52,3 +52,29 @@ The updated `FFX.html` adds an additive feature layer while retaining the existi
 - Animated gradient ambience is layered behind the existing background video; reduced-motion preference is respected.
 
 Production activation still required for coupon redemption, referral rewards, server notifications, public reviews, live chat inbox, and live order status: implement authenticated server endpoints and corresponding admin controls before advertising these as fully live services.
+
+---
+
+## SIAM feature update (November 2026)
+
+এই আপডেটে হোমপেজের টুলবারে নতুন শর্টকাট ও পেজ যোগ হয়েছে: My Saved UID, One Tap Reorder, Download/Print Invoice, Achievement & Rewards, Dark/Light Mode, Help Center & FAQ, Premium Welcome Animation, Price Drop Alert, Multiple Payment Methods, Top Buyers Leaderboard, Product Stock Status এবং Best Deal Finder।
+
+### বর্তমানে কার্যকর ক্লায়েন্ট-সাইড সুবিধা
+- Saved UID, থিম পছন্দ, রিভিউ কাউন্ট/লোকাল ব্যাজ এবং Price Alert ব্রাউজারের local storage-এ থাকে; অন্য ডিভাইসে সিঙ্ক হয় না।
+- One Tap Reorder সর্বশেষ খোলা প্রোডাক্ট পেজে ফেরত নেয়; পুরোনো অর্ডার/পেমেন্ট আবার জমা দেয় না।
+- Invoice বাটন My Orders পেজে নিয়ে ব্রাউজারের Print / Save as PDF চালায়; এটি ট্যাক্স ইনভয়েস নয়।
+- Best Deal Finder পেজে লোড হওয়া প্যাকেজের প্রদর্শিত দাম কম থেকে বেশি সাজিয়ে দেখায়; ভিন্ন পরিমাণের প্যাকেজের মধ্যে value-for-money তুলনা নয়।
+- বর্তমান Add Money ফ্লোতে থাকা bKash ও Nagad পদ্ধতি দেখানো হয়।
+- Welcome animation প্রতি ব্রাউজার সেশনে একবার চলে।
+
+### যে সুবিধাগুলোর জন্য Backend/Admin integration এখনো দরকার
+- Server-side coupon validation ও order total-এ discount প্রয়োগ।
+- Referral attribution, fraud checks এবং wallet bonus credit।
+- অর্ডারের live status events এবং server-pushed notifications।
+- Push price alerts (service worker/notification permission ও server scheduler)।
+- Live stock/availability source এবং admin-managed stock status।
+- Customer consent-সহ privacy-safe leaderboard এবং server-calculated rewards।
+- নতুন payment gateway-এর merchant credentials, webhook verification এবং server-side reconciliation।
+- Server-issued invoice number/verified order receipt।
+
+কোনো আর্থিক সুবিধা বা লাইভ স্টক এই UI আপডেট একা থেকে কৃত্রিমভাবে নিশ্চিত করে না।
