@@ -704,7 +704,7 @@ async function walletApi(req, res, pathname) {
     const method = String(body.method || '').toLowerCase();
     const trx = String(body.trx || '').trim().toUpperCase().replace(/\s+/g, '');
     if (!Number.isFinite(amount) || amount < 10 || amount > 50000) return sendJson(res, 400, { error: '১০ থেকে ৫০,০০০ টাকার মধ্যে পরিমাণ দিন' });
-    if (!['bkash','nagad'].includes(method)) return sendJson(res, 400, { error: 'পেমেন্ট মাধ্যম নির্বাচন করুন' });
+    if (!['bkash','nagad','rocket'].includes(method)) return sendJson(res, 400, { error: 'পেমেন্ট মাধ্যম নির্বাচন করুন' });
     if (!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res, 400, { error: 'সঠিক Transaction ID দিন' });
     if (ledger.deposits.some(x => x.trx === trx)) return sendJson(res, 409, { error: 'এই Transaction ID আগে জমা দেওয়া হয়েছে' });
     const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, amount, method, trx, status: 'pending', createdAt: Date.now(), reviewedAt: null, note: '' };

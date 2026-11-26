@@ -3489,24 +3489,41 @@ var isLoggedIn = window.isLoggedIn || false;
 
 
 <style>
-/* SIAM TOP UP FF — reference-inspired Add Money flow */
-#walletDepositModal{position:fixed;inset:0;z-index:99999;background:#f2f7ff;display:none;align-items:stretch;justify-content:center;padding:0;overflow:auto}
+/* SIAM TOP UP FF — green Add Money wallet flow */
+#walletDepositModal{position:fixed;inset:0;z-index:99999;background:#eaf8ef;display:none;align-items:stretch;justify-content:center;padding:0;overflow:auto}
 #walletDepositModal.show{display:flex}
-.wd-card{position:relative;width:100%;max-width:560px;min-height:100dvh;max-height:none;overflow:auto;background:#f2f7ff;border-radius:0;padding:18px 16px calc(28px + env(safe-area-inset-bottom,0px));color:#172033;box-shadow:none}
+.wd-card{position:relative;width:100%;max-width:680px;min-height:100dvh;overflow:auto;background:linear-gradient(180deg,#effaf3,#f5fbf7);border-radius:0;padding:18px 18px calc(30px + env(safe-area-inset-bottom,0px));color:#172033;box-shadow:none}
 .wd-head{height:54px;display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 20px;padding:0 12px;background:#fff;border-radius:12px;box-shadow:0 4px 16px rgba(35,65,120,.05)}
-.wd-head h2{margin:0;font-size:17px;font-weight:800;color:#334155}
+.wd-head h2{margin:0;font-size:17px;font-weight:800;color:#14251b}
 .wd-close{border:0;border-radius:50%;width:34px;height:34px;background:#f1f5f9;color:#64748b;font-size:23px}
+.wd-hero{position:relative;min-height:220px;overflow:hidden;border-radius:26px;margin:0 0 28px;padding:28px 24px;background:#07833d;box-shadow:0 16px 35px rgba(13,145,69,.2);color:#fff}
+.wd-hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.9}
+.wd-hero-copy{position:relative;z-index:1;max-width:62%;text-shadow:0 1px 8px rgba(0,0,0,.2)}
+.wd-hero-pill{display:inline-flex;border-radius:30px;padding:9px 15px;background:#12bf50;color:#fff;font-size:12px;font-weight:900;letter-spacing:.04em;margin-bottom:20px}
+.wd-hero h3{font-size:29px;line-height:1.12;margin:0 0 12px;font-weight:900}
+.wd-hero h3 em{font-style:normal;color:#7bff9b}
+.wd-hero p{font-size:13px;line-height:1.7;margin:0;color:#e4ffeb}
+.wd-amount-card{background:#fff;border-radius:26px;padding:24px 22px;box-shadow:0 8px 30px rgba(30,90,55,.07)}
+.wd-amount-title{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.wd-amount-icon{width:62px;height:62px;border-radius:19px;background:#0ecb4c;color:#fff;display:grid;place-items:center;font-size:30px;box-shadow:0 8px 18px #0ecb4c33}
+.wd-amount-title h3{font-size:21px;margin:0 0 5px;font-weight:900;color:#121a22}
+.wd-amount-title p{margin:0;color:#7a8490;font-size:13px}
+.wd-card label{display:block;font-size:13px;font-weight:800;margin:18px 0 8px;color:#68717c;letter-spacing:.04em}
+.wd-card input{width:100%;padding:17px 16px;border:1.5px solid #dfe4e8;border-radius:17px;background:#fbfcfd;font:inherit;font-size:19px;box-sizing:border-box;color:#172033}
+.wd-primary{width:100%;border:0;border-radius:18px;padding:18px;margin-top:22px;background:linear-gradient(100deg,#78dc92,#8eeaa5);color:#fff;font-weight:900;font-size:17px;box-shadow:0 8px 18px rgba(34,197,94,.16)}
+.wd-trust{display:grid;grid-template-columns:repeat(3,1fr);margin-top:22px;border:1px solid #d9eee0;border-radius:18px;background:#effaf3;overflow:hidden}
+.wd-trust div{text-align:center;padding:17px 5px;color:#159447;border-right:1px solid #d9eee0}.wd-trust div:last-child{border:0}
+.wd-trust b{display:block;font-size:12px;color:#26352b;margin-top:5px}.wd-trust small{font-size:10px;color:#829087}
 .wd-sub{font-size:14px;line-height:1.65;color:#64748b;margin:0 0 18px}
-.wd-card label{display:block;font-size:13px;font-weight:800;margin:18px 0 8px;color:#64748b;letter-spacing:.04em}
-.wd-card input{width:100%;padding:17px 16px;border:1.5px solid #dbe2ea;border-radius:16px;background:#fff;font:inherit;font-size:20px;box-sizing:border-box;color:#172033}
-.wd-primary{width:100%;border:0;border-radius:14px;padding:17px;margin-top:18px;background:#d7e8ff;color:#0755b8;font-weight:900;font-size:17px}
 .wd-methods{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:20px 0}
-.wd-method{border:1px solid #e5eaf2;background:#fff;border-radius:12px;padding:18px 10px;min-height:94px;font-weight:900;font-size:17px;color:#26344d;box-shadow:0 3px 12px rgba(20,40,90,.04)}
-.wd-method span{font-size:25px!important}
+.wd-method{border:1px solid #e8edf0;background:#fff;border-radius:12px;padding:18px 10px;min-height:94px;font-weight:900;font-size:18px;color:#26344d;box-shadow:0 3px 12px rgba(20,40,90,.04)}
+.wd-method span{font-size:24px!important}
 .wd-method:active{transform:scale(.98)}
 .wd-detail-brand{border-radius:16px;padding:20px 12px;text-align:center;background:#fff;margin:8px 0 12px;font-size:23px;font-weight:900;color:#d81b60;box-shadow:0 4px 14px rgba(20,40,90,.04)}
 .wd-warning{border-radius:14px;padding:18px 16px;margin:14px 0;background:#ca2478;border:0;color:#fff;font-size:14px;line-height:1.8}
 #walletDepositModal[data-method="nagad"] .wd-warning{background:#ed171f}
+#walletDepositModal[data-method="rocket"] .wd-warning{background:#84268d}
+#walletDepositModal[data-method="rocket"] .wd-detail-brand{color:#84268d}
 .wd-number{display:flex;align-items:center;justify-content:space-between;gap:10px;background:transparent;border:0;border-radius:0;padding:6px 0;margin:10px 0;color:#fff}
 .wd-number b{font-size:18px;letter-spacing:.4px;color:#ffe66b}
 .wd-copy{border:0;border-radius:9px;padding:9px 11px;background:rgba(90,0,35,.28);color:#fff;font-weight:800}
@@ -3517,29 +3534,34 @@ var isLoggedIn = window.isLoggedIn || false;
 .wd-back{border:0;background:#fff;color:#64748b;font-weight:800;padding:12px;border-radius:12px;width:100%;text-align:left;margin-bottom:14px}
 #wdStepAmount .wd-sub{background:#fff;padding:20px;border-radius:14px}
 #wdStepMethod .wd-sub{font-size:17px;font-weight:800;color:#64748b;text-align:center;margin:20px 0}
-#wdStepMethod:before{content:"Auto payment";display:block;text-align:center;font-size:24px;font-weight:900;color:#64748b;margin:22px 0 54px}
-#wdStepMethod:after{content:"মোবাইল ব্যাংকিং";display:block;background:#0755b8;color:#fff;text-align:center;border-radius:9px;padding:14px;margin-top:12px;font-weight:800}
+#wdStepMethod:before{content:"Payments";display:block;text-align:center;font-size:24px;font-weight:900;color:#64748b;margin:22px 0 30px}
 #wdStepDetails .wd-sub{background:#fff;padding:14px;border-radius:12px;margin-bottom:12px}
 #wdStepDetails .wd-warning label{color:#fff}
 #wdAmountShown{font-weight:800;color:#64748b}
-@media(min-width:600px){.wd-card{min-height:100vh;padding:24px 28px}.wd-head{margin-bottom:28px}}
+@media(max-width:390px){.wd-hero{padding:22px 18px;min-height:205px}.wd-hero h3{font-size:25px}.wd-hero-copy{max-width:68%}.wd-amount-card{padding:20px 16px}}
+@media(min-width:600px){.wd-card{padding:24px 28px}.wd-head{margin-bottom:28px}}
 </style>
 <div id="walletDepositModal" aria-hidden="true">
  <section class="wd-card" role="dialog" aria-modal="true" aria-labelledby="wdTitle">
   <div class="wd-head"><h2 id="wdTitle">Add Money</h2><button type="button" class="wd-close" id="wdClose" aria-label="বন্ধ">×</button></div>
   <section id="wdStepAmount">
-   <p class="wd-sub">Enter Amount<br><small>আপনার ওয়ালেটে কত টাকা যোগ করতে চান তা লিখুন।</small></p>
-   <label for="wdAmount">AMOUNT (৳)</label>
-   <input id="wdAmount" type="number" min="10" max="50000" step="1" inputmode="numeric" placeholder="টাকার পরিমাণ লিখুন">
-   <p style="font-size:13px;color:#64748b;margin:10px 4px">✓ Amount will be added to your SIAM TOP UP FF wallet</p>
-   <button type="button" class="wd-primary" id="wdContinue">Add Money Securely　➜</button>
+   <div class="wd-hero"><img src="siam-wallet-hero.png" alt=""><div class="wd-hero-copy"><div class="wd-hero-pill">⚡ INSTANT &amp; SECURE</div><h3>Add Money to <em>Siam Top Up FF</em></h3><p>Fast, protected wallet recharge for uninterrupted top-ups.</p></div></div>
+   <div class="wd-amount-card">
+    <div class="wd-amount-title"><div class="wd-amount-icon">▣</div><div><h3>Enter Amount</h3><p>Type the amount you want to add.</p></div></div>
+    <label for="wdAmount">AMOUNT</label>
+    <input id="wdAmount" type="number" min="10" max="50000" step="1" inputmode="numeric" placeholder="৳　Enter amount">
+    <p style="font-size:13px;color:#89938c;margin:12px 4px">🟢 Amount will be added to your Siam Top Up FF wallet</p>
+    <button type="button" class="wd-primary" id="wdContinue">▣　Add Money Securely　➜</button>
+    <div class="wd-trust"><div>⚡<b>Instant</b><small>Quick balance update</small></div><div>♙<b>Secure</b><small>Protected payment</small></div><div>◉<b>Support</b><small>Help when needed</small></div></div>
+   </div>
   </section>
   <section id="wdStepMethod" hidden>
    <button type="button" class="wd-back" id="wdBackAmount">⌂　　×</button>
    <p class="wd-sub">পেমেন্ট করার মাধ্যম নির্বাচন করুন</p>
    <div class="wd-methods">
     <button type="button" class="wd-method" data-method="bkash"><span style="color:#d81b60">bKash</span></button>
-    <button type="button" class="wd-method" data-method="nagad"><span style="color:#f04438">নগদ</span></button>
+    <button type="button" class="wd-method" data-method="rocket"><span style="color:#84268d">ROCKET<br><small style="font-size:13px">রকেট</small></span></button>
+    <button type="button" class="wd-method" data-method="nagad"><span style="color:#ed171f">নগদ</span></button>
    </div>
   </section>
   <section id="wdStepDetails" hidden>
@@ -3577,7 +3599,7 @@ async function api(path,body){var u=user();if(!u)throw Error('আগে Login �
 function show(){if(!user()){alert('Add Money করতে আগে Login করুন');if(window.openSiamLogin)window.openSiamLogin();return}modal.classList.add('show');modal.setAttribute('aria-hidden','false');document.getElementById('wdStepAmount').hidden=false;document.getElementById('wdStepMethod').hidden=true;document.getElementById('wdStepDetails').hidden=true;document.getElementById('wdAmount').value='';document.getElementById('wdTrx').value='';if(msg)msg.textContent=''}
 function close(){modal.classList.remove('show');modal.setAttribute('aria-hidden','true')}
 function amount(){var n=Number(document.getElementById('wdAmount').value);if(!Number.isFinite(n)||n<10||n>50000||Math.floor(n)!==n){alert('১০ থেকে ৫০,০০০ টাকার মধ্যে পূর্ণ সংখ্যা লিখুন।');return false}return n}
-function choose(method){var n=amount();if(!n)return;selectedMethod=method;document.getElementById('wdStepAmount').hidden=true;document.getElementById('wdStepMethod').hidden=true;document.getElementById('wdStepDetails').hidden=false;document.getElementById('wdBrand').textContent=method==='bkash'?'bKash':'নগদ';document.getElementById('wdPayNumber').textContent=PAYMENT_NUMBER;document.getElementById('wdAmountShown').value='৳ '+n;document.getElementById('wdAmountHeading').textContent=n;document.getElementById('wdAmountText').textContent=n;document.getElementById('wdDialInstruction').textContent=method==='bkash'?'*247# ডায়াল করে আপনার bKash মেনুতে যান অথবা bKash অ্যাপ খুলুন।':'*167# ডায়াল করে আপনার NAGAD মেনুতে যান অথবা NAGAD অ্যাপ খুলুন।';modal.setAttribute('data-method',method);if(msg)msg.textContent=''}
+function choose(method){var n=amount();if(!n)return;selectedMethod=method;document.getElementById('wdStepAmount').hidden=true;document.getElementById('wdStepMethod').hidden=true;document.getElementById('wdStepDetails').hidden=false;document.getElementById('wdBrand').textContent=method==='bkash'?'bKash':method==='nagad'?'নগদ':'ROCKET · রকেট';document.getElementById('wdPayNumber').textContent=PAYMENT_NUMBER;document.getElementById('wdAmountShown').value='৳ '+n;document.getElementById('wdAmountHeading').textContent=n;document.getElementById('wdAmountText').textContent=n;document.getElementById('wdDialInstruction').textContent=method==='bkash'?'*247# ডায়াল করে আপনার bKash মেনুতে যান অথবা bKash অ্যাপ খুলুন।':method==='nagad'?'*167# ডায়াল করে আপনার NAGAD মেনুতে যান অথবা NAGAD অ্যাপ খুলুন।':'*322# ডায়াল করে আপনার Rocket মেনুতে যান অথবা Rocket অ্যাপ খুলুন।';modal.setAttribute('data-method',method);if(msg)msg.textContent=''}
 document.getElementById('wdContinue').onclick=function(){if(!amount())return;document.getElementById('wdStepAmount').hidden=true;document.getElementById('wdStepMethod').hidden=false};
 document.querySelectorAll('.wd-method').forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-method'))})});
 document.getElementById('wdBackAmount').onclick=function(){document.getElementById('wdStepMethod').hidden=true;document.getElementById('wdStepAmount').hidden=false};

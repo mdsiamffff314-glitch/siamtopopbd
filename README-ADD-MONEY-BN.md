@@ -13,10 +13,10 @@
 2. Environment Variable-এ `FFX-PASS` দিন — এটি আপনার Admin Panel password। আগের অ্যাডমিন পাসওয়ার্ড থাকলে সেটিই ব্যবহার করুন।
 3. `DATA_DIR`-কে স্থায়ী Persistent Disk-এর path দিন (উদাহরণ: `/var/data`)। এই ফোল্ডারে `wallet-ledger.json` এবং আগের `config.json` থাকবে। **Persistent Disk না থাকলে host restart/redeploy-এ জমার রেকর্ড হারাতে পারে।**
 4. Deploy শেষে `/admin`-এ লগইন করুন, তারপর `/admin-money` খুলুন। একই ব্রাউজারে একই admin session ব্যবহার হবে।
-5. `/admin-money`-এ প্রতিটি Pending আবেদনের Transaction ID ও পরিমাণ বিকাশ/নগদ merchant/personal অ্যাকাউন্টের transaction history-তে মিলিয়ে তারপর Approve করুন। শুধু screenshot বা ব্যবহারকারীর লেখা দেখে Approve করবেন না।
+5. `/admin-money`-এ প্রতিটি Pending আবেদনের Transaction ID ও পরিমাণ বিকাশ/নগদ/রকেট merchant/personal অ্যাকাউন্টের transaction history-তে মিলিয়ে তারপর Approve করুন। শুধু screenshot বা ব্যবহারকারীর লেখা দেখে Approve করবেন না।
 
 ## গুরুত্বপূর্ণ সীমাবদ্ধতা ও নিরাপত্তা
-- এটি Manual payment verification। সিস্টেম নিজে bKash/Nagad-এর সার্ভার থেকে টাকা এসেছে কি না জানতে পারে না। তাই অ্যাডমিনের বাস্তব transaction history যাচাই বাধ্যতামূলক।
+- এটি Manual payment verification। সিস্টেম নিজে bKash/Nagad/Rocket-এর সার্ভার থেকে টাকা এসেছে কি না জানতে পারে না। তাই অ্যাডমিনের বাস্তব transaction history যাচাই বাধ্যতামূলক।
 - একই Transaction ID একাধিকবার ব্যবহার বন্ধ করা হয়েছে। তবে একই Node server-এর একক instance ধরে ledger সংরক্ষণ করে; একাধিক server instance/replica চালালে shared database/atomic unique constraint দরকার।
 - Local disk storage-এ `DATA_DIR` অবশ্যই persistent হতে হবে। একাধিক replica বা বড় পরিসরের ব্যবহারের আগে Firestore/SQL-এর transaction ও unique index-এ স্থানান্তর করুন।
 - Firebase Web API key browser-এ থাকা স্বাভাবিক public config; Service Account private key এখানে যোগ করা হয়নি।
@@ -30,9 +30,9 @@
 ## নতুন Add Money ডিজাইন
 - Profile পেজের আগের ডিজাইন অপরিবর্তিত রাখা হয়েছে।
 - Add Money থেকে Amount → bKash/Nagad নির্বাচন → আলাদা নির্দেশনা → Transaction ID জমা—এই ধাপগুলো করা হয়েছে।
-- bKash ও Nagad উভয় পেজে পেমেন্ট নম্বর `01889277663` দেখানো হয়।
+- bKash, Nagad ও Rocket—তিনটি পেজেই পেমেন্ট নম্বর `01889277663` দেখানো হয়।
 - পেমেন্ট আবেদন Pending থাকে; অ্যাডমিন আসল লেনদেন যাচাই করে Approve করলে তবেই Wallet balance বাড়ে।
-- ওয়েবসাইট কখনো bKash/Nagad PIN বা OTP চাইবে না।
+- ওয়েবসাইট কখনো bKash/Nagad/Rocket PIN বা OTP চাইবে না।
 
 ---
 
@@ -78,3 +78,4 @@ Production activation still required for coupon redemption, referral rewards, se
 - Server-issued invoice number/verified order receipt।
 
 কোনো আর্থিক সুবিধা বা লাইভ স্টক এই UI আপডেট একা থেকে কৃত্রিমভাবে নিশ্চিত করে না।
+\n\n### পেমেন্ট মাধ্যম আপডেট\n- Add Money পেজে সবুজ Siam Top Up FF wallet banner ও amount card যোগ করা হয়েছে।\n- Payment selection-এ bKash, Nagad ও Rocket আছে; EPS নেই।\n- তিনটি মাধ্যমেই Send Money নির্দেশনা ও Transaction ID verification form আছে।\n- তিনটি মাধ্যমের জন্যই পেমেন্ট নম্বর `01889277663` সেট করা হয়েছে।\n- Rocket deposit method server validation ও Admin Money list-এ যুক্ত হয়েছে।\n
