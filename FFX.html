@@ -2500,8 +2500,7 @@ var isLoggedIn = window.isLoggedIn || false;
     var uid=document.getElementById('uid').value.trim();
     if(!sel.name){toast('আগে একটি রিচার্জ প্যাকেজ সিলেক্ট করুন');return;}
     if(uid.length<6){toast('সঠিক প্লেয়ার আইডি দিন');document.getElementById('uid').focus();return;}
-    // TODO: অর্ডার সাবমিট লজিক এখানে বসান
-    toast('অর্ডার সাবমিট হচ্ছে... ('+sel.name+', '+sel.price+' টাকা, '+sel.pay+')');
+    submitOrder(uid);
   });
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); });
   upd();
@@ -2515,7 +2514,7 @@ var isLoggedIn = window.isLoggedIn || false;
   var isLoggedIn = window.isLoggedIn || false;
   var LOGIN_URL='#';
 
-  var BALANCE=0;          // ইউজারের ওয়ালেট ব্যালেন্স (ব্যাকএন্ড থেকে বসান)
+  var BALANCE=0;
   var HOWTO_URL='https://youtu.be/5AljsY7DG2E?si=ySHMmXu4KhFv50Qx';      // "কিভাবে অর্ডার করবেন?" ভিডিও/গাইডের লিংক
 
   var sel={name:'',price:0,pay:'Wallet Pay'};
@@ -2537,8 +2536,7 @@ var isLoggedIn = window.isLoggedIn || false;
   var balRow=document.getElementById('uidBalRow'), rf=document.getElementById('uidRf');
   rf.onclick=function(){
     rf.classList.remove('spin'); void rf.offsetWidth; rf.classList.add('spin');
-    // TODO: এখানে ব্যাকএন্ড থেকে ব্যালেন্স আনুন, তারপর BALANCE সেট করে upd() কল করুন
-    upd();
+    loadBalance();
   };
   var how=document.getElementById('uidHow');
   how.onclick=function(e){ if(HOWTO_URL==='#') e.preventDefault(); };
@@ -2588,7 +2586,11 @@ var isLoggedIn = window.isLoggedIn || false;
     // TODO: অর্ডার সাবমিট লজিক এখানে বসান
     toast('অর্ডার সাবমিট হচ্ছে... ('+sel.name+', '+sel.price+' টাকা, '+sel.pay+')');
   });
-  window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); });
+  async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
+  async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
+  async function submitOrder(uid){if(sel.pay!=='Wallet Pay'){toast('এই পেমেন্ট পদ্ধতিটি এখনো অর্ডারের জন্য চালু নয়। Wallet Pay নির্বাচন করুন।');return;}if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}buy.disabled=true;toast('অর্ডার জমা হচ্ছে...');try{var d=await walletApi('/api/wallet/order',{product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);await loadBalance();}finally{buy.disabled=false;}}
+  window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
+  if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
 })();
 // ==========================================

@@ -649,8 +649,8 @@ function removeUpload(name) {
 
 
 function loadWalletLedger() {
-  try { const x = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf8')); return x && typeof x === 'object' && Array.isArray(x.deposits) ? x : { deposits: [] }; }
-  catch (_) { return { deposits: [] }; }
+  try { const x = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf8')); return x && typeof x === 'object' && Array.isArray(x.deposits) ? Object.assign({ orders: [] }, x, { orders: Array.isArray(x.orders) ? x.orders : [] }) : { deposits: [], orders: [] }; }
+  catch (_) { return { deposits: [], orders: [] }; }
 }
 function saveWalletLedger(ledger) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
@@ -687,7 +687,9 @@ async function verifyFirebaseUser(req) {
   return { uid: payload.sub, email: String(payload.email || '').slice(0, 180), name: String(payload.name || '').slice(0, 100) };
 }
 function walletBalance(ledger, uid) {
-  return ledger.deposits.filter(x => x.uid === uid && x.status === 'approved').reduce((n, x) => n + Number(x.amount), 0);
+  const added = ledger.deposits.filter(x => x.uid === uid && x.status === 'approved').reduce((n, x) => n + Number(x.amount), 0);
+  const spent = (ledger.orders || []).filter(x => x.uid === uid && ['pending','processing','completed'].includes(x.status)).reduce((n, x) => n + Number(x.price), 0);
+  return Math.max(0, Math.round((added - spent) * 100) / 100);
 }
 async function walletApi(req, res, pathname) {
   let user;
@@ -697,6 +699,20 @@ async function walletApi(req, res, pathname) {
   if (req.method === 'GET' && pathname === '/api/wallet/me') {
     const mine = ledger.deposits.filter(x => x.uid === user.uid).sort((a,b) => b.createdAt - a.createdAt);
     return sendJson(res, 200, { balance: walletBalance(ledger, user.uid), deposits: mine.map(({id, amount, method, trx, status, createdAt, reviewedAt, note}) => ({id, amount, method, trx, status, createdAt, reviewedAt, note})) });
+  }
+  if (req.method === 'POST' && pathname === '/api/wallet/order') {
+    const body = await readJson(req, 8192);
+    const product = String(body.product || '').trim().slice(0, 100);
+    const uid = String(body.gameUid || '').trim();
+    const price = Math.round(Number(body.price) * 100) / 100;
+    const allowed = { '25 Diamond':22, '50 Diamond':36, '115 Diamond':79, '240 Diamond':158, '355 Diamond':237, '480 Diamond':316, '610 Diamond':400, '850 Diamond':558, '1240 Diamond':800, '2530 Diamond':1610, '5060 Diamond':3220, '10120 Diamond':6440 };
+    if (!Object.prototype.hasOwnProperty.call(allowed, product) || allowed[product] !== price) return sendJson(res, 400, { error: 'প্যাকেজ/মূল্য সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' });
+    if (!/^\d{6,24}$/.test(uid)) return sendJson(res, 400, { error: 'সঠিক Free Fire UID দিন' });
+    if (walletBalance(ledger, user.uid) < price) return sendJson(res, 400, { error: 'আপনার Wallet-এ পর্যাপ্ত টাকা নেই' });
+    const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, gameUid: uid, product, price, status: 'pending', createdAt: Date.now(), updatedAt: Date.now(), note: 'অ্যাডমিন যাচাই/ডেলিভারি অপেক্ষমাণ' };
+    ledger.orders = ledger.orders || [];
+    ledger.orders.push(rec); saveWalletLedger(ledger);
+    return sendJson(res, 201, { ok: true, message: 'অর্ডার গ্রহণ করা হয়েছে। ডেলিভারি নিশ্চিত না হওয়া পর্যন্ত My Orders-এ Pending দেখাবে।', order: rec, balance: walletBalance(ledger, user.uid) });
   }
   if (req.method === 'POST' && pathname === '/api/wallet/deposit') {
     const body = await readJson(req, 8192);
@@ -718,6 +734,21 @@ async function walletApi(req, res, pathname) {
 async function handleApi(req, res, pathname) {
   try {
     if (pathname.startsWith('/api/wallet/')) return await walletApi(req, res, pathname);
+    if (pathname.startsWith('/api/admin/orders')) {
+      if (!isAuthed(req)) return sendJson(res, 401, { error: 'অ্যাডমিন লগইন করুন' });
+      const ledger = loadWalletLedger(); ledger.orders = ledger.orders || [];
+      if (req.method === 'GET' && pathname === '/api/admin/orders') return sendJson(res, 200, { orders: ledger.orders.slice().sort((a,b) => b.createdAt-a.createdAt) });
+      const m = /^\/api\/admin\/orders\/([a-f0-9]+)\/(processing|completed|rejected)$/.exec(pathname);
+      if (req.method === 'POST' && m) {
+        const item = ledger.orders.find(x => x.id === m[1]);
+        if (!item) return sendJson(res, 404, { error: 'অর্ডার পাওয়া যায়নি' });
+        if (item.status === 'rejected' || item.status === 'completed') return sendJson(res, 409, { error: 'এই অর্ডার আগেই নিষ্পত্তি হয়েছে' });
+        const body = await readJson(req, 4096); item.status = m[2]; item.updatedAt = Date.now(); item.note = String(body.note || '').trim().slice(0,200);
+        saveWalletLedger(ledger);
+        return sendJson(res, 200, { ok: true, order: item, balance: walletBalance(ledger, item.uid) });
+      }
+      return sendJson(res, 404, { error: 'Not found' });
+    }
     if (pathname.startsWith('/api/admin/deposits')) {
       if (!isAuthed(req)) return sendJson(res, 401, { error: 'অ্যাডমিন লগইন করুন' });
       const ledger = loadWalletLedger();
