@@ -24,33 +24,6 @@ let firebaseCerts = null, firebaseCertExpiry = 0;
 const SESSION_MS = 12 * 60 * 60 * 1000;
 const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
 
-async function notifyTelegramOrder(order) {
-  const token = String(process.env.TELEGRAM_BOT_TOKEN || '').trim();
-  const chatId = String(process.env.TELEGRAM_CHAT_ID || '').trim();
-  if (!token || !chatId) return { sent: false, reason: 'telegram_env_missing' };
-  const lines = [
-    '🛒 SIAM TOP UP — নতুন অর্ডার প্রসেসিং',
-    `Order ID: ${order.id || '-'}`,
-    `Player ID: ${order.gameUid || '-'}`,
-    `Package: ${order.product || '-'}`,
-    `Price: ৳${order.price ?? '-'}`,
-    `Payment: ${order.paymentMethod || '-'}`,
-    `Transaction ID: ${order.trx || '-'}`,
-    `Customer: ${order.name || order.email || '-'}`
-  ];
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), disable_web_page_preview: true })
-  });
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok || !result.ok) {
-    console.error('Telegram notification failed:', result.description || response.status);
-    return { sent: false, reason: 'telegram_api_error' };
-  }
-  return { sent: true };
-}
-
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -684,6 +657,42 @@ function saveWalletLedger(ledger) {
   fs.writeFileSync(tmp, JSON.stringify(ledger, null, 2), { mode: 0o600 });
   fs.renameSync(tmp, WALLET_FILE);
 }
+
+// Send an order notification to the admin's private Telegram chat.
+// The bot token is read only from Render environment variables and is never exposed to the browser.
+function telegramHtml(value) {
+  return String(value == null ? '' : value).replace(/[&<>\"]/g, function (ch) {
+    return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' })[ch];
+  });
+}
+async function sendTelegramOrderNotice(order) {
+  const botToken = String(process.env.TELEGRAM_BOT_TOKEN || '').trim();
+  const chatId = String(process.env.TELEGRAM_CHAT_ID || '').trim();
+  if (!botToken || !chatId) return false;
+  const method = order.paymentMethod ? String(order.paymentMethod).toUpperCase() : 'Wallet';
+  const lines = [
+    '🔔 <b>SIAM TOP UP — অর্ডার Processing</b>',
+    '<b>Order ID:</b> ' + telegramHtml(order.id),
+    '<b>Player ID:</b> ' + telegramHtml(order.gameUid),
+    '<b>Package:</b> ' + telegramHtml(order.product),
+    '<b>Price:</b> ৳' + telegramHtml(order.price),
+    '<b>Payment:</b> ' + telegramHtml(method),
+    '<b>Transaction ID:</b> ' + telegramHtml(order.trx || 'N/A'),
+    '<b>Customer:</b> ' + telegramHtml(order.name || order.email || order.uid || 'N/A')
+  ];
+  try {
+    const response = await fetch('https://api.telegram.org/bot' + encodeURIComponent(botToken) + '/sendMessage', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), parse_mode: 'HTML', disable_web_page_preview: true })
+    });
+    if (!response.ok) return false;
+    const result = await response.json();
+    return !!(result && result.ok);
+  } catch (_) {
+    return false;
+  }
+}
 async function getFirebaseCerts() {
   if (firebaseCerts && Date.now() < firebaseCertExpiry) return firebaseCerts;
   const r = await fetch('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
@@ -805,22 +814,18 @@ async function handleApi(req, res, pathname) {
         const item = ledger.orders.find(x => x.id === m[1]);
         if (!item) return sendJson(res, 404, { error: 'অর্ডার পাওয়া যায়নি' });
         if (item.status === 'rejected' || item.status === 'completed') return sendJson(res, 409, { error: 'এই অর্ডার আগেই নিষ্পত্তি হয়েছে' });
-        const body = await readJson(req, 4096); item.status = m[2]; item.updatedAt = Date.now(); item.note = String(body.note || '').trim().slice(0,200);
+        const body = await readJson(req, 4096);
+        item.status = m[2]; item.updatedAt = Date.now(); item.note = String(body.note || '').trim().slice(0,200);
         saveWalletLedger(ledger);
-        let telegram = { sent: false, reason: 'not_processing' };
-        if (m[2] === 'processing' && !item.telegramSentAt) {
-          try {
-            telegram = await notifyTelegramOrder(item);
-            if (telegram.sent) {
-              item.telegramSentAt = Date.now();
-              saveWalletLedger(ledger);
-            }
-          } catch (telegramError) {
-            console.error('Telegram notification error:', telegramError.message);
-            telegram = { sent: false, reason: 'telegram_request_failed' };
+        let telegramNotified = !!item.telegramNotifiedAt;
+        if (m[2] === 'processing' && !telegramNotified) {
+          telegramNotified = await sendTelegramOrderNotice(item);
+          if (telegramNotified) {
+            item.telegramNotifiedAt = Date.now();
+            saveWalletLedger(ledger);
           }
         }
-        return sendJson(res, 200, { ok: true, order: item, balance: walletBalance(ledger, item.uid), telegram });
+        return sendJson(res, 200, { ok: true, order: item, balance: walletBalance(ledger, item.uid), telegramNotified });
       }
       return sendJson(res, 404, { error: 'Not found' });
     }
