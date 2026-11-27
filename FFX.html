@@ -1004,9 +1004,11 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
     <a class="card" href="#indonesia-server" data-open="indonesia-server"><div class="thumb ph"><img src="INDONESIA SERVER.jpg" alt="Indonesia Server" loading="lazy" decoding="async"></div><p>Indonesia Server</p></a>
   </div>
 
-  <div class="sec"><h2><em>UID CHECKER</em></h2></div>
+  <div class="sec"><h2><em>UID CHECKER & FREE FIRE TOOLS</em></h2></div>
   <div class="grid">
     <a class="card" href="#uid-checker" data-open="uid-checker"><div class="thumb ph"><img src="uid checker.jpg" alt="UID Checker" loading="lazy" decoding="async"></div><p>UID Checker</p></a>
+    <a class="card" href="#nickname-generator" data-open="nickname-generator"><div class="thumb ph"><img src="NICKNAME GENERATOR.svg" alt="Nickname Generator" loading="lazy" decoding="async"></div><p>Nickname Generator</p></a>
+    <a class="card" href="#guild-name-generator" data-open="guild-name-generator"><div class="thumb ph"><img src="GUILD NAME GENERATOR.svg" alt="Guild Name Generator" loading="lazy" decoding="async"></div><p>Guild Name</p></a>
   </div>
 
 </main>
@@ -1559,6 +1561,52 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
       <span class="ti"><svg class="f"><use href="#tg"/></svg></span>
       <span><b>Telegram HelpLine</b><p>সকাল ৮টা থেকে রাত ১২টা</p></span>
     </a>
+  </section>
+</main>
+
+<!-- FREE FIRE NAME TOOLS -->
+<style>
+.fftool-box{background:#fff;border:1px solid var(--bd);border-radius:18px;padding:18px;margin-top:16px;box-shadow:0 8px 24px rgba(25,65,140,.07)}
+.fftool-box .lbl{display:block;margin:4px 0 8px;font-weight:700;color:var(--v)}
+.fftool-box .inp{width:100%;box-sizing:border-box}
+.fftool-result{margin-top:14px;padding:14px;border:1px dashed #78a9ff;border-radius:14px;background:#f4f8ff;text-align:center;font-size:21px;font-weight:800;color:#174bb8;min-height:30px;overflow-wrap:anywhere}
+.fftool-actions{display:flex;gap:10px;margin-top:12px}
+.fftool-actions .btn{flex:1}
+.fftool-hint{font-size:12px;color:#667085;margin-top:10px;line-height:1.6}
+</style>
+<main class="wrap" id="nickView" hidden>
+  <button class="pv-back" type="button" onclick="location.hash=''"><svg class="i"><use href="#arr"/></svg>Back</button>
+  <section class="pv-hero">
+    <div class="pv-img"><div class="thumb ph"><img src="NICKNAME GENERATOR.svg" alt="Nickname Generator"></div></div>
+    <div class="pv-info"><h1>NICKNAME GENERATOR</h1><span class="pv-pill">Free Fire Stylish Name Maker</span></div>
+  </section>
+  <section class="fftool-box">
+    <label class="lbl" for="nickInput">আপনার নাম লিখুন</label>
+    <input class="inp" id="nickInput" maxlength="16" placeholder="যেমন: SIAM">
+    <div class="fftool-result" id="nickResult">SI么M</div>
+    <div class="fftool-actions">
+      <button class="btn" type="button" id="nickMake">নতুন নাম তৈরি</button>
+      <button class="btn" type="button" id="nickCopy">Copy Name</button>
+    </div>
+    <p class="fftool-hint">নাম লিখে নতুন নাম তৈরি করুন। পছন্দ হলে Copy Name চাপ দিয়ে কপি করুন। কিছু বিশেষ চিহ্ন গেমে সমর্থিত নাও হতে পারে।</p>
+  </section>
+</main>
+
+<main class="wrap" id="guildView" hidden>
+  <button class="pv-back" type="button" onclick="location.hash=''"><svg class="i"><use href="#arr"/></svg>Back</button>
+  <section class="pv-hero">
+    <div class="pv-img"><div class="thumb ph"><img src="GUILD NAME GENERATOR.svg" alt="Guild Name Generator"></div></div>
+    <div class="pv-info"><h1>GUILD NAME GENERATOR</h1><span class="pv-pill">Free Fire Guild Name Maker</span></div>
+  </section>
+  <section class="fftool-box">
+    <label class="lbl" for="guildInput">আপনার Guild-এর মূল শব্দ (ঐচ্ছিক)</label>
+    <input class="inp" id="guildInput" maxlength="12" placeholder="যেমন: SIAM">
+    <div class="fftool-result" id="guildResult">亗 DARK LEGENDS 亗</div>
+    <div class="fftool-actions">
+      <button class="btn" type="button" id="guildMake">নতুন Guild Name</button>
+      <button class="btn" type="button" id="guildCopy">Copy Name</button>
+    </div>
+    <p class="fftool-hint">নিজের পছন্দের শব্দ লিখে Guild Name তৈরি করুন অথবা খালি রেখেও নতুন নাম পেতে পারেন।</p>
   </section>
 </main>
 
@@ -2445,11 +2493,11 @@ var isLoggedIn = window.isLoggedIn || false;
   var toastEl=document.getElementById('toast'), tt;
   function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(tt);tt=setTimeout(function(){toastEl.classList.remove('show')},2400)}
   function route(){
-    var onFF=location.hash==='#ff-likes', onUid=location.hash==='#uid-topup', onWm=location.hash==='#weekly-monthly', onWl=location.hash==='#weekly-lite', onLu=location.hash==='#level-up-pass', onIn=location.hash==='#indonesia-server', onOr=location.hash==='#my-orders', onCd=location.hash==='#my-codes', onAc=location.hash==='#account', onTr=location.hash==='#my-transaction', onCt=location.hash==='#contact-us', onUc=location.hash==='#uid-checker';
-    home.hidden=onFF||onUid||onWm||onWl||onLu||onIn||onOr||onCd||onAc||onTr||onCt||onUc; foot.hidden=onFF||onUid||onWm||onWl||onLu||onIn||onOr||onCd||onAc||onTr||onCt||onUc;
+    var onFF=location.hash==='#ff-likes', onUid=location.hash==='#uid-topup', onWm=location.hash==='#weekly-monthly', onWl=location.hash==='#weekly-lite', onLu=location.hash==='#level-up-pass', onIn=location.hash==='#indonesia-server', onOr=location.hash==='#my-orders', onCd=location.hash==='#my-codes', onAc=location.hash==='#account', onTr=location.hash==='#my-transaction', onCt=location.hash==='#contact-us', onUc=location.hash==='#uid-checker', onNick=location.hash==='#nickname-generator', onGuild=location.hash==='#guild-name-generator';
+    home.hidden=onFF||onUid||onWm||onWl||onLu||onIn||onOr||onCd||onAc||onTr||onCt||onUc||onNick||onGuild; foot.hidden=onFF||onUid||onWm||onWl||onLu||onIn||onOr||onCd||onAc||onTr||onCt||onUc||onNick||onGuild;
     var tv=document.getElementById('trView'); if(tv) tv.hidden=!onTr;
     var ctv=document.getElementById('ctView'); if(ctv) ctv.hidden=!onCt;
-    var ucv=document.getElementById('ucView'); if(ucv) ucv.hidden=!onUc;
+    var ucv=document.getElementById('ucView'); if(ucv) ucv.hidden=!onUc;\n    var nv=document.getElementById('nickView'); if(nv) nv.hidden=!onNick;\n    var gv=document.getElementById('guildView'); if(gv) gv.hidden=!onGuild;
     var av=document.getElementById('acView'); if(av) av.hidden=!onAc;
     var cv=document.getElementById('cdView'); if(cv) cv.hidden=!onCd; ff.hidden=!onFF;
     var ov=document.getElementById('orView'); if(ov) ov.hidden=!onOr;
@@ -3784,5 +3832,39 @@ body.sf-dark .acc-feature-heading{border-color:#30415d}
 body.sf-dark .brand-name{color:#eff6ff}
 </style>
 
-</body>
+<script>
+(function(){
+ const styles=[
+  n=>'꧁༺ '+n+' ༻꧂', n=>'亗 '+n+' 么', n=>'『'+n+'』', n=>'乂 '+n+' 乂',
+  n=>'★彡 '+n+' 彡★', n=>'么 '+n+' 亗', n=>'ツ '+n+' ツ'
+ ];
+ const byId=id=>document.getElementById(id);
+ function makeNick(){
+  const raw=(byId('nickInput').value||'SIAM').trim().replace(/\\s+/g,' ');
+  const style=styles[Math.floor(Math.random()*styles.length)];
+  byId('nickResult').textContent=style(raw||'SIAM');
+ }
+ const guilds=['DARK LEGENDS','ROYAL WARRIORS','SHADOW HUNTERS','ELITE FORCE','NIGHT RIDERS','DEMON SQUAD','THUNDER KINGS','PHOENIX ARMY','ALPHA ESPORTS','BLAZE TITANS'];
+ function makeGuild(){
+  const word=(byId('guildInput').value||'').trim();
+  const base=guilds[Math.floor(Math.random()*guilds.length)];
+  const name=word ? (word.toUpperCase()+' '+base.split(' ').slice(-1)[0]) : base;
+  byId('guildResult').textContent='亗 '+name+' 亗';
+ }
+ async function copyResult(id){
+  const value=byId(id).textContent;
+  try{await navigator.clipboard.writeText(value); alert('নামটি কপি হয়েছে!');}
+  catch(e){
+   const t=document.createElement('textarea');t.value=value;document.body.appendChild(t);t.select();
+   try{document.execCommand('copy');alert('নামটি কপি হয়েছে!');}catch(_){alert('কপি করা যায়নি, নামটি সিলেক্ট করে কপি করুন।');}
+   t.remove();
+  }
+ }
+ byId('nickMake').addEventListener('click',makeNick);
+ byId('nickCopy').addEventListener('click',()=>copyResult('nickResult'));
+ byId('guildMake').addEventListener('click',makeGuild);
+ byId('guildCopy').addEventListener('click',()=>copyResult('guildResult'));
+})();
+</script>
+\n</body>
 </html>
