@@ -90,3 +90,11 @@ Production activation still required for coupon redemption, referral rewards, se
 - `/admin-money`-এ Customer Orders তালিকা যোগ হয়েছে। অ্যাডমিন Pending → Processing → Completed করতে পারে; Reject করলে অর্ডারের কাটা Wallet balance আবার ফেরত আসে।
 - Transaction ID তুলনার আগে uppercase ও whitespace normalization করা হয়, তাই অক্ষরের case বা মাঝের whitespace বদলে একই ID পুনরায় ব্যবহার করা যায় না।
 - এই JSON ledger একক Node.js instance ও persistent `DATA_DIR`-এর জন্য। একাধিক replica চালালে Firestore/SQL-এর atomic transaction এবং unique constraint ব্যবহার করতে হবে।
+
+
+### Instant Pay / সরাসরি বিকাশ-নগদ অর্ডার (নতুন)
+- পণ্য পেজে Instant Pay নির্বাচন করলে বিকাশ/নগদ বেছে Transaction ID দেওয়ার ফর্ম দেখা যায়।
+- সঠিক পরিমাণ Send Money করে Transaction ID জমা দিলে অর্ডার Pending অবস্থায় `/admin-money`-এর Customer Orders তালিকায় যাবে।
+- অ্যাডমিন বিকাশ/নগদ অ্যাপের transaction history-তে নম্বর, পরিমাণ ও Transaction ID মিলিয়ে তারপর Processing/Completed করবেন। টাকা যাচাই না করে Complete করবেন না।
+- একই Transaction ID Add Money আবেদন বা অন্য কোনো অর্ডারে আগে ব্যবহার হয়ে থাকলে সার্ভার সেটি প্রত্যাখ্যান করবে।
+- এই পদ্ধতি কোনো automatic bKash/Nagad gateway নয়; এটি manual verification।

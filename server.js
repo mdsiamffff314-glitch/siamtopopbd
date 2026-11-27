@@ -687,7 +687,7 @@ async function verifyFirebaseUser(req) {
 }
 function walletBalance(ledger, uid) {
   const added = ledger.deposits.filter(x => x.uid === uid && x.status === 'approved').reduce((n, x) => n + Number(x.amount), 0);
-  const spent = (ledger.orders || []).filter(x => x.uid === uid && ['pending','processing','completed'].includes(x.status)).reduce((n, x) => n + Number(x.price), 0);
+  const spent = (ledger.orders || []).filter(x => x.uid === uid && x.paymentType !== 'manual' && ['pending','processing','completed'].includes(x.status)).reduce((n, x) => n + Number(x.price), 0);
   return Math.max(0, Math.round((added - spent) * 100) / 100);
 }
 async function walletApi(req, res, pathname) {
@@ -701,8 +701,33 @@ async function walletApi(req, res, pathname) {
     return sendJson(res, 200, {
       balance: walletBalance(ledger, user.uid),
       deposits: mine.map(({id, amount, method, trx, status, createdAt, reviewedAt, note}) => ({id, amount, method, trx, status, createdAt, reviewedAt, note})),
-      orders: myOrders.map(x => ({ id:x.id, status:x.status, date:x.createdAt, updated:x.updatedAt, package:x.product, price:x.price, playerId:x.gameUid, productKey:x.productKey }))
+      orders: myOrders.map(x => ({ id:x.id, status:x.status, date:x.createdAt, updated:x.updatedAt, package:x.product, price:x.price, playerId:x.gameUid, productKey:x.productKey, paymentMethod:x.paymentMethod || '', trx:x.trx || '' }))
     });
+  }
+  if (req.method === 'POST' && pathname === '/api/wallet/manual-order') {
+    const body = await readJson(req, 8192);
+    const product = String(body.product || '').trim().slice(0, 100);
+    const productKey = String(body.productKey || 'uid').trim();
+    const gameUid = String(body.gameUid || '').trim();
+    const price = Math.round(Number(body.price) * 100) / 100;
+    const paymentMethod = String(body.paymentMethod || '').toLowerCase();
+    const trx = String(body.trx || '').trim().toUpperCase().replace(/\s+/g, '');
+    const productDef = PRODUCTS.find(x => x.key === productKey && x.key !== 'uc');
+    if (!productDef) return sendJson(res, 400, { error: 'প্রোডাক্ট নির্বাচন সঠিক নয়' });
+    const defaults = getDefaults();
+    const packageList = (defaults[productKey] && defaults[productKey].packages) || [];
+    const matched = packageList.find(x => x.name === product || x.label === product);
+    if (!matched || Number(matched.price) !== price || !Number.isFinite(price) || price <= 0) return sendJson(res, 400, { error: 'প্যাকেজ/মূল্য সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' });
+    if (!/^\d{6,24}$/.test(gameUid)) return sendJson(res, 400, { error: 'সঠিক Free Fire UID দিন' });
+    if (!['bkash', 'nagad'].includes(paymentMethod)) return sendJson(res, 400, { error: 'বিকাশ অথবা নগদ নির্বাচন করুন' });
+    if (!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res, 400, { error: 'সঠিক Transaction ID দিন' });
+    ledger.orders = ledger.orders || [];
+    const duplicateDeposit = ledger.deposits.some(x => String(x.trx || '').trim().toUpperCase().replace(/\s+/g, '') === trx);
+    const duplicateOrder = ledger.orders.some(x => String(x.trx || '').trim().toUpperCase().replace(/\s+/g, '') === trx);
+    if (duplicateDeposit || duplicateOrder) return sendJson(res, 409, { error: 'এই Transaction ID আগে ব্যবহার করা হয়েছে' });
+    const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, gameUid, productKey, product: matched.name || product, price, paymentType: 'manual', paymentMethod, trx, status: 'pending', createdAt: Date.now(), updatedAt: Date.now(), note: 'পেমেন্ট Transaction ID অ্যাডমিন যাচাই অপেক্ষমাণ' };
+    ledger.orders.push(rec); saveWalletLedger(ledger);
+    return sendJson(res, 201, { ok: true, message: 'অর্ডার আবেদন জমা হয়েছে। Transaction ID যাচাই শেষে অ্যাডমিন অর্ডার Processing করবে।', order: rec });
   }
   if (req.method === 'POST' && pathname === '/api/wallet/order') {
     const body = await readJson(req, 8192);
