@@ -83,3 +83,10 @@ Production activation still required for coupon redemption, referral rewards, se
 ### UI polish (26 Nov 2026)
 - Amount field-এ বৈধ ১০–৫০,০০০ পূর্ণসংখ্যা লিখলে Add Money Securely বাটন উজ্জ্বল সবুজ হয়; ফাঁকা/অবৈধ ইনপুটে muted ও disabled থাকে।
 - bKash, Nagad ও Rocket method card-এ আলাদা branded app-style icon এবং নাম দেখানো হয়।
+
+### অর্ডার সিস্টেমের অতিরিক্ত সংযোগ (27 Nov 2026)
+- FF Likes, UID/Diamond Topup, Weekly/Monthly, Weekly Lite, Level Up Pass এবং Indonesia Server—সব পণ্যের জন্য একই authenticated Wallet order API সংযুক্ত করা হয়েছে। সার্ভার `FFX.html`-এর ডিফল্ট প্যাকেজ অথবা Admin Panel-এ সংরক্ষিত প্যাকেজ তালিকা থেকে নাম ও দাম মিলিয়ে অর্ডার গ্রহণ করে।
+- `/api/wallet/me` এখন ব্যবহারকারীর নিজের অর্ডারও ফেরত দেয়; My Orders পেজ সেই সার্ভার ডাটা দেখায়।
+- `/admin-money`-এ Customer Orders তালিকা যোগ হয়েছে। অ্যাডমিন Pending → Processing → Completed করতে পারে; Reject করলে অর্ডারের কাটা Wallet balance আবার ফেরত আসে।
+- Transaction ID তুলনার আগে uppercase ও whitespace normalization করা হয়, তাই অক্ষরের case বা মাঝের whitespace বদলে একই ID পুনরায় ব্যবহার করা যায় না।
+- এই JSON ledger একক Node.js instance ও persistent `DATA_DIR`-এর জন্য। একাধিক replica চালালে Firestore/SQL-এর atomic transaction এবং unique constraint ব্যবহার করতে হবে।

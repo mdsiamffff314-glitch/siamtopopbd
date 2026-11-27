@@ -757,51 +757,12 @@ function drawProduct(b,key){
     patch({name:v('#pName',df.name),title:v('#pTitle',df.title),pill:v('#pPill',df.pill)});
   };
 
-  /* 3. Packages & prices */
+  /* 3. Packages & prices (read-only; FFX.html is the single source of truth) */
   if(p.hasGrid){
-    var pk=p.packages.map(function(x){return {label:x.label,name:x.name,price:x.price}});
-    var pb=sc(n++,'wal','Packages & prices','These show on the product page');
+    var pb=sc(n++,'wal','Packages & prices','Read from the website code (FFX.html)');
     var pbody=$('.sc-b',pb);b.appendChild(pb);
-    var sync=function(){pbody.querySelectorAll('.pk-row').forEach(function(r,i){
-      pk[i].label=$('[data-f=label]',r).value;pk[i].name=$('[data-f=name]',r).value;pk[i].price=$('[data-f=price]',r).value})};
-    var drawPk=function(){
-      pbody.innerHTML='<div id="pkRows"></div>'+
-        '<button type="button" class="btn ghost block" id="pkAdd">'+ic('plus')+'Add package</button>'+
-        '<div class="btns"><button type="button" class="btn sm" id="pkSave">'+ic('save')+'Save packages</button>'+
-        (p.custom.packages?'<button type="button" class="btn danger sm" id="pkRst">'+ic('undo')+'Default</button>':'')+'</div>';
-      var rows=$('#pkRows',pbody);
-      pk.forEach(function(x,i){
-        var r=document.createElement('div');r.className='pk-row';
-        r.innerHTML='<div class="rowhd"><b><span class="rn">Package '+(i+1)+'</span></b><div class="rowact">'+
-            '<button type="button" class="ib" data-a="up" '+(i===0?'disabled':'')+' aria-label="Up">'+ic('up')+'</button>'+
-            '<button type="button" class="ib" data-a="down" '+(i===pk.length-1?'disabled':'')+' aria-label="Down">'+ic('down')+'</button>'+
-            '<button type="button" class="ib del" data-a="del" '+(pk.length<=1?'disabled':'')+' aria-label="Delete">'+ic('trash')+'</button></div></div>'+
-          '<label class="lb">Package name</label><input class="inp" data-f="label" placeholder="e.g. 100 Diamond" maxlength="140">'+
-          '<div class="g2"><div><label class="lb">Price (BDT)</label><input class="inp" data-f="price" inputmode="decimal" placeholder="85"></div>'+
-          '<div><label class="lb">Order name <span class="opt">(optional)</span></label><input class="inp" data-f="name" placeholder="Same as name" maxlength="100"></div></div>';
-        $('[data-f=label]',r).value=x.label;$('[data-f=price]',r).value=x.price;$('[data-f=name]',r).value=(x.name&&x.name!==x.label)?x.name:'';
-        $('[data-a=up]',r).onclick=function(){sync();var t=pk[i];pk[i]=pk[i-1];pk[i-1]=t;drawPk()};
-        $('[data-a=down]',r).onclick=function(){sync();var t=pk[i];pk[i]=pk[i+1];pk[i+1]=t;drawPk()};
-        $('[data-a=del]',r).onclick=function(){if(confirm('Delete this package?')){sync();pk.splice(i,1);drawPk()}};
-        rows.appendChild(r);
-      });
-      $('#pkAdd',pbody).onclick=function(){
-        sync();if(pk.length>=40){toast('Maximum 40 packages','bad');return}
-        pk.push({label:'',name:'',price:''});drawPk();
-        var L=pbody.querySelectorAll('.pk-row [data-f=label]');L[L.length-1].focus();
-      };
-      $('#pkSave',pbody).onclick=function(){
-        sync();
-        for(var i=0;i<pk.length;i++){
-          if(!pk[i].label.trim()){toast('Package '+(i+1)+': name is empty','bad');return}
-          if(String(pk[i].price).trim()===''||!isFinite(Number(pk[i].price))||Number(pk[i].price)<0){toast('Package '+(i+1)+': enter a valid price','bad');return}
-        }
-        patch({packages:pk.map(function(x){return {label:x.label.trim(),name:String(x.name||'').trim(),price:Number(x.price)}})});
-      };
-      var rs=$('#pkRst',pbody);
-      if(rs)rs.onclick=function(){if(confirm('Restore the default packages and prices?'))patch({packages:null})};
-    };
-    drawPk();
+    pbody.innerHTML='<p class="muted" style="margin:0 0 10px">These package names and prices are controlled by FFX.html. The website display and order validation use this same list, so an old Admin-saved list cannot hide or replace packages.</p>'+
+      '<div class="pk-code-list">'+p.packages.map(function(x){return '<div class="rowhd"><span>'+String(x.label).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]})+'</span><b>BDT '+Number(x.price)+'</b></div>'}).join('')+'</div>';
   }
 
   /* 4. Rules */

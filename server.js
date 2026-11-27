@@ -126,7 +126,7 @@ function sanitizeProd(c) {
   const o = {};
   if (!c || typeof c !== 'object') return o;
   ['name', 'title', 'pill'].forEach(function (k) { if (typeof c[k] === 'string' && c[k].trim()) o[k] = c[k].trim().slice(0, 80); });
-  if (c.packages) o.packages = sanitizePackages(c.packages);
+  // Package lists are intentionally not stored in admin config. FFX.html is the single source of truth.
   if (Array.isArray(c.rules)) o.rules = c.rules.map(function (x) { return String(x == null ? '' : x).trim().slice(0, 300); }).filter(Boolean).slice(0, 20);
   return o;
 }
@@ -428,7 +428,6 @@ function applyProducts(html) {
     let seg = html.slice(s, e);
     if (c.title) seg = seg.replace(/(<h1>)[\s\S]*?(<\/h1>)/, function (m, a, b) { return a + esc(c.title) + b; });
     if (c.pill) seg = seg.replace(/(<span class="pv-pill">(?:<svg[\s\S]*?<\/svg>)?)[\s\S]*?(<\/span>)/, function (m, a, b) { return a + esc(c.pill) + b; });
-    if (c.packages && p.grid) seg = seg.replace(new RegExp('(<div class="pk-grid" id="' + p.grid + '">)[\\s\\S]*?(</div>)'), function (m, a, b) { return a + '\n' + packagesHtml(c.packages) + '\n      ' + b; });
     if (c.rules) seg = seg.replace(/(<ul class="rl">)[\s\S]*?(<\/ul>)/, function (m, a, b) { return a + '\n' + c.rules.map(function (r) { return '        <li>' + esc(r) + '</li>'; }).join('\n') + '\n      ' + b; });
     html = html.slice(0, s) + seg + html.slice(e);
   });
@@ -618,9 +617,9 @@ function currentView() {
       return {
         key: p.key, img: p.img, hasGrid: !!p.grid, hasRules: d.rules.length > 0 || !!c.rules,
         name: c.name || d.name, title: c.title || d.title, pill: c.pill || d.pill,
-        packages: c.packages || d.packages, rules: c.rules || d.rules,
+        packages: d.packages, rules: c.rules || d.rules,
         defaults: d, anyCustom: Object.keys(c).length > 0,
-        custom: { packages: !!c.packages, rules: !!c.rules }
+        custom: { packages: false, rules: !!c.rules }
       };
     }),
     texts: TEXTS.map(function (t) {
@@ -698,18 +697,29 @@ async function walletApi(req, res, pathname) {
   const ledger = loadWalletLedger();
   if (req.method === 'GET' && pathname === '/api/wallet/me') {
     const mine = ledger.deposits.filter(x => x.uid === user.uid).sort((a,b) => b.createdAt - a.createdAt);
-    return sendJson(res, 200, { balance: walletBalance(ledger, user.uid), deposits: mine.map(({id, amount, method, trx, status, createdAt, reviewedAt, note}) => ({id, amount, method, trx, status, createdAt, reviewedAt, note})) });
+    const myOrders = (ledger.orders || []).filter(x => x.uid === user.uid).sort((a,b) => b.createdAt - a.createdAt);
+    return sendJson(res, 200, {
+      balance: walletBalance(ledger, user.uid),
+      deposits: mine.map(({id, amount, method, trx, status, createdAt, reviewedAt, note}) => ({id, amount, method, trx, status, createdAt, reviewedAt, note})),
+      orders: myOrders.map(x => ({ id:x.id, status:x.status, date:x.createdAt, updated:x.updatedAt, package:x.product, price:x.price, playerId:x.gameUid, productKey:x.productKey }))
+    });
   }
   if (req.method === 'POST' && pathname === '/api/wallet/order') {
     const body = await readJson(req, 8192);
     const product = String(body.product || '').trim().slice(0, 100);
+    const productKey = String(body.productKey || 'uid').trim();
     const uid = String(body.gameUid || '').trim();
     const price = Math.round(Number(body.price) * 100) / 100;
-    const allowed = { '25 Diamond':22, '50 Diamond':36, '115 Diamond':79, '240 Diamond':158, '355 Diamond':237, '480 Diamond':316, '610 Diamond':400, '850 Diamond':558, '1240 Diamond':800, '2530 Diamond':1610, '5060 Diamond':3220, '10120 Diamond':6440 };
-    if (!Object.prototype.hasOwnProperty.call(allowed, product) || allowed[product] !== price) return sendJson(res, 400, { error: 'প্যাকেজ/মূল্য সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' });
+    const productDef = PRODUCTS.find(x => x.key === productKey && x.key !== 'uc');
+    if (!productDef) return sendJson(res, 400, { error: 'প্রোডাক্ট নির্বাচন সঠিক নয়' });
+    const defaults = getDefaults();
+    // Validate orders against the exact package list parsed from FFX.html.
+    const packageList = (defaults[productKey] && defaults[productKey].packages) || [];
+    const matched = packageList.find(x => x.name === product || x.label === product);
+    if (!matched || Number(matched.price) !== price || !Number.isFinite(price) || price <= 0) return sendJson(res, 400, { error: 'প্যাকেজ/মূল্য সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' });
     if (!/^\d{6,24}$/.test(uid)) return sendJson(res, 400, { error: 'সঠিক Free Fire UID দিন' });
     if (walletBalance(ledger, user.uid) < price) return sendJson(res, 400, { error: 'আপনার Wallet-এ পর্যাপ্ত টাকা নেই' });
-    const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, gameUid: uid, product, price, status: 'pending', createdAt: Date.now(), updatedAt: Date.now(), note: 'অ্যাডমিন যাচাই/ডেলিভারি অপেক্ষমাণ' };
+    const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, gameUid: uid, productKey, product: matched.name || product, price, status: 'pending', createdAt: Date.now(), updatedAt: Date.now(), note: 'অ্যাডমিন যাচাই/ডেলিভারি অপেক্ষমাণ' };
     ledger.orders = ledger.orders || [];
     ledger.orders.push(rec); saveWalletLedger(ledger);
     return sendJson(res, 201, { ok: true, message: 'অর্ডার গ্রহণ করা হয়েছে। ডেলিভারি নিশ্চিত না হওয়া পর্যন্ত My Orders-এ Pending দেখাবে।', order: rec, balance: walletBalance(ledger, user.uid) });
@@ -722,7 +732,7 @@ async function walletApi(req, res, pathname) {
     if (!Number.isFinite(amount) || amount < 10 || amount > 50000) return sendJson(res, 400, { error: '১০ থেকে ৫০,০০০ টাকার মধ্যে পরিমাণ দিন' });
     if (!['bkash','nagad','rocket'].includes(method)) return sendJson(res, 400, { error: 'পেমেন্ট মাধ্যম নির্বাচন করুন' });
     if (!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res, 400, { error: 'সঠিক Transaction ID দিন' });
-    if (ledger.deposits.some(x => x.trx === trx)) return sendJson(res, 409, { error: 'এই Transaction ID আগে জমা দেওয়া হয়েছে' });
+    if (ledger.deposits.some(x => String(x.trx || '').trim().toUpperCase().replace(/\s+/g, '') === trx)) return sendJson(res, 409, { error: 'এই Transaction ID আগে জমা দেওয়া হয়েছে' });
     const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, amount, method, trx, status: 'pending', createdAt: Date.now(), reviewedAt: null, note: '' };
     ledger.deposits.push(rec);
     saveWalletLedger(ledger);
