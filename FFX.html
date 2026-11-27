@@ -1007,8 +1007,8 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
   <div class="sec"><h2><em>UID CHECKER & FREE FIRE TOOLS</em></h2></div>
   <div class="grid">
     <a class="card" href="#uid-checker" data-open="uid-checker"><div class="thumb ph"><img src="uid checker.jpg" alt="UID Checker" loading="lazy" decoding="async"></div><p>UID Checker</p></a>
-    <a class="card" href="#nickname-generator" data-open="nickname-generator"><div class="thumb ph"><img src="NICKNAME GENERATOR.svg" alt="Nickname Generator" loading="lazy" decoding="async"></div><p>Nickname Generator</p></a>
-    <a class="card" href="#guild-name-generator" data-open="guild-name-generator"><div class="thumb ph"><img src="GUILD NAME GENERATOR.svg" alt="Guild Name Generator" loading="lazy" decoding="async"></div><p>Guild Name</p></a>
+    <a class="card" href="#nickname-generator" data-open="nickname-generator"><div class="thumb ph"><img src="nickname-generator.jpg" alt="Nickname Generator" loading="lazy" decoding="async"></div><p>Nickname Generator</p></a>
+    <a class="card" href="#guild-name-generator" data-open="guild-name-generator"><div class="thumb ph"><img src="guild-name-generator.jpg" alt="Guild Name Generator" loading="lazy" decoding="async"></div><p>Guild Name Generator</p></a>
   </div>
 
 </main>
@@ -2497,7 +2497,9 @@ var isLoggedIn = window.isLoggedIn || false;
     home.hidden=onFF||onUid||onWm||onWl||onLu||onIn||onOr||onCd||onAc||onTr||onCt||onUc||onNick||onGuild; foot.hidden=onFF||onUid||onWm||onWl||onLu||onIn||onOr||onCd||onAc||onTr||onCt||onUc||onNick||onGuild;
     var tv=document.getElementById('trView'); if(tv) tv.hidden=!onTr;
     var ctv=document.getElementById('ctView'); if(ctv) ctv.hidden=!onCt;
-    var ucv=document.getElementById('ucView'); if(ucv) ucv.hidden=!onUc;\n    var nv=document.getElementById('nickView'); if(nv) nv.hidden=!onNick;\n    var gv=document.getElementById('guildView'); if(gv) gv.hidden=!onGuild;
+    var ucv=document.getElementById('ucView'); if(ucv) ucv.hidden=!onUc;
+    var nv=document.getElementById('nickView'); if(nv) nv.hidden=!onNick;
+    var gv=document.getElementById('guildView'); if(gv) gv.hidden=!onGuild;
     var av=document.getElementById('acView'); if(av) av.hidden=!onAc;
     var cv=document.getElementById('cdView'); if(cv) cv.hidden=!onCd; ff.hidden=!onFF;
     var ov=document.getElementById('orView'); if(ov) ov.hidden=!onOr;
@@ -3832,39 +3834,38 @@ body.sf-dark .acc-feature-heading{border-color:#30415d}
 body.sf-dark .brand-name{color:#eff6ff}
 </style>
 
-<script>
+<script id="siam-name-generators">
 (function(){
- const styles=[
-  n=>'꧁༺ '+n+' ༻꧂', n=>'亗 '+n+' 么', n=>'『'+n+'』', n=>'乂 '+n+' 乂',
-  n=>'★彡 '+n+' 彡★', n=>'么 '+n+' 亗', n=>'ツ '+n+' ツ'
- ];
+ 'use strict';
  const byId=id=>document.getElementById(id);
+ const styles=[n=>'꧁༺ '+n+' ༻꧂',n=>'亗 '+n+' 么',n=>'『'+n+'』',n=>'乂 '+n+' 乂',n=>'★彡 '+n+' 彡★',n=>'么 '+n+' 亗',n=>'ツ '+n+' ツ',n=>'ᎷᎡ』'+n];
+ const guildFirst=['DARK','ROYAL','SHADOW','ELITE','NIGHT','DEMON','THUNDER','PHOENIX','ALPHA','BLAZE','SAVAGE','LEGEND'];
+ const guildLast=['LEGENDS','WARRIORS','HUNTERS','FORCE','SQUAD','KINGS','ARMY','ESPORTS','TITANS','RANGERS'];
  function makeNick(){
-  const raw=(byId('nickInput').value||'SIAM').trim().replace(/\\s+/g,' ');
-  const style=styles[Math.floor(Math.random()*styles.length)];
-  byId('nickResult').textContent=style(raw||'SIAM');
+   const input=byId('nickInput'); const raw=(input&&input.value||'').trim().replace(/\s+/g,' ').slice(0,16);
+   const result=byId('nickResult'); if(!result)return;
+   if(!raw){result.textContent='আগে আপনার নাম লিখুন'; if(input)input.focus(); return;}
+   result.textContent=styles[Math.floor(Math.random()*styles.length)](raw);
  }
- const guilds=['DARK LEGENDS','ROYAL WARRIORS','SHADOW HUNTERS','ELITE FORCE','NIGHT RIDERS','DEMON SQUAD','THUNDER KINGS','PHOENIX ARMY','ALPHA ESPORTS','BLAZE TITANS'];
  function makeGuild(){
-  const word=(byId('guildInput').value||'').trim();
-  const base=guilds[Math.floor(Math.random()*guilds.length)];
-  const name=word ? (word.toUpperCase()+' '+base.split(' ').slice(-1)[0]) : base;
-  byId('guildResult').textContent='亗 '+name+' 亗';
+   const input=byId('guildInput'); const raw=(input&&input.value||'').trim().replace(/[<>]/g,'').slice(0,12).toUpperCase();
+   const result=byId('guildResult'); if(!result)return;
+   const first=guildFirst[Math.floor(Math.random()*guildFirst.length)];
+   const last=guildLast[Math.floor(Math.random()*guildLast.length)];
+   result.textContent='亗 '+(raw?raw+' ':'')+first+' '+last+' 亗';
  }
- async function copyResult(id){
-  const value=byId(id).textContent;
-  try{await navigator.clipboard.writeText(value); alert('নামটি কপি হয়েছে!');}
-  catch(e){
-   const t=document.createElement('textarea');t.value=value;document.body.appendChild(t);t.select();
-   try{document.execCommand('copy');alert('নামটি কপি হয়েছে!');}catch(_){alert('কপি করা যায়নি, নামটি সিলেক্ট করে কপি করুন।');}
-   t.remove();
-  }
+ async function copyText(id){
+   const el=byId(id), value=el&&el.textContent.trim(); if(!value)return;
+   try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(value);}else{throw new Error('clipboard unavailable');} alert('নামটি কপি হয়েছে!');}
+   catch(e){const t=document.createElement('textarea');t.value=value;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();let ok=false;try{ok=document.execCommand('copy');}catch(_){}t.remove();alert(ok?'নামটি কপি হয়েছে!':'নামটি সিলেক্ট করে কপি করুন।');}
  }
- byId('nickMake').addEventListener('click',makeNick);
- byId('nickCopy').addEventListener('click',()=>copyResult('nickResult'));
- byId('guildMake').addEventListener('click',makeGuild);
- byId('guildCopy').addEventListener('click',()=>copyResult('guildResult'));
+ const nm=byId('nickMake'),gm=byId('guildMake'),nc=byId('nickCopy'),gc=byId('guildCopy');
+ if(nm)nm.addEventListener('click',makeNick); if(gm)gm.addEventListener('click',makeGuild);
+ if(nc)nc.addEventListener('click',()=>copyText('nickResult')); if(gc)gc.addEventListener('click',()=>copyText('guildResult'));
 })();
 </script>
-\n</body>
+\n
+
+
+</body>
 </html>
