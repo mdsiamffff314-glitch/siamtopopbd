@@ -24,6 +24,33 @@ let firebaseCerts = null, firebaseCertExpiry = 0;
 const SESSION_MS = 12 * 60 * 60 * 1000;
 const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
 
+async function notifyTelegramOrder(order) {
+  const token = String(process.env.TELEGRAM_BOT_TOKEN || '').trim();
+  const chatId = String(process.env.TELEGRAM_CHAT_ID || '').trim();
+  if (!token || !chatId) return { sent: false, reason: 'telegram_env_missing' };
+  const lines = [
+    '🛒 SIAM TOP UP — নতুন অর্ডার প্রসেসিং',
+    `Order ID: ${order.id || '-'}`,
+    `Player ID: ${order.gameUid || '-'}`,
+    `Package: ${order.product || '-'}`,
+    `Price: ৳${order.price ?? '-'}`,
+    `Payment: ${order.paymentMethod || '-'}`,
+    `Transaction ID: ${order.trx || '-'}`,
+    `Customer: ${order.name || order.email || '-'}`
+  ];
+  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ chat_id: chatId, text: lines.join('\n'), disable_web_page_preview: true })
+  });
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || !result.ok) {
+    console.error('Telegram notification failed:', result.description || response.status);
+    return { sent: false, reason: 'telegram_api_error' };
+  }
+  return { sent: true };
+}
+
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.js': 'application/javascript; charset=utf-8',
@@ -719,7 +746,7 @@ async function walletApi(req, res, pathname) {
     const matched = packageList.find(x => x.name === product || x.label === product);
     if (!matched || Number(matched.price) !== price || !Number.isFinite(price) || price <= 0) return sendJson(res, 400, { error: 'প্যাকেজ/মূল্য সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' });
     if (!/^\d{6,24}$/.test(gameUid)) return sendJson(res, 400, { error: 'সঠিক Free Fire UID দিন' });
-    if (!['bkash', 'nagad', 'rocket'].includes(paymentMethod)) return sendJson(res, 400, { error: 'বিকাশ, নগদ অথবা রকেট নির্বাচন করুন' });
+    if (!['bkash', 'nagad'].includes(paymentMethod)) return sendJson(res, 400, { error: 'বিকাশ অথবা নগদ নির্বাচন করুন' });
     if (!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res, 400, { error: 'সঠিক Transaction ID দিন' });
     ledger.orders = ledger.orders || [];
     const duplicateDeposit = ledger.deposits.some(x => String(x.trx || '').trim().toUpperCase().replace(/\s+/g, '') === trx);
@@ -780,7 +807,20 @@ async function handleApi(req, res, pathname) {
         if (item.status === 'rejected' || item.status === 'completed') return sendJson(res, 409, { error: 'এই অর্ডার আগেই নিষ্পত্তি হয়েছে' });
         const body = await readJson(req, 4096); item.status = m[2]; item.updatedAt = Date.now(); item.note = String(body.note || '').trim().slice(0,200);
         saveWalletLedger(ledger);
-        return sendJson(res, 200, { ok: true, order: item, balance: walletBalance(ledger, item.uid) });
+        let telegram = { sent: false, reason: 'not_processing' };
+        if (m[2] === 'processing' && !item.telegramSentAt) {
+          try {
+            telegram = await notifyTelegramOrder(item);
+            if (telegram.sent) {
+              item.telegramSentAt = Date.now();
+              saveWalletLedger(ledger);
+            }
+          } catch (telegramError) {
+            console.error('Telegram notification error:', telegramError.message);
+            telegram = { sent: false, reason: 'telegram_request_failed' };
+          }
+        }
+        return sendJson(res, 200, { ok: true, order: item, balance: walletBalance(ledger, item.uid), telegram });
       }
       return sendJson(res, 404, { error: 'Not found' });
     }

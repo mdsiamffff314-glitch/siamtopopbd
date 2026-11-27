@@ -2553,7 +2553,7 @@ var isLoggedIn = window.isLoggedIn || false;
     submitOrder(uid);
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'ff',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'ff',product:sel.name,price:sel.price,gameUid:uid});}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'ff',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'ff',product:sel.name,price:sel.price,gameUid:uid});}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); });
   upd();
 })();
@@ -2639,7 +2639,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'uid',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'uid',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'uid',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'uid',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -2726,7 +2726,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'wm',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'wm',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'wm',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'wm',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -2813,7 +2813,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'wl',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'wl',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'wl',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'wl',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -2900,7 +2900,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'lu',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'lu',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'lu',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'lu',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -2987,7 +2987,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'in',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'in',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'in',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'in',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -3512,98 +3512,28 @@ var isLoggedIn = window.isLoggedIn || false;
 </script>
 
 <script>
-/* SIAM TOP UP — product Instant Pay flow: select provider first, then show provider-specific Send Money instructions and Transaction ID form. */
+/* Siam Top Up manual payment form. Payments remain pending until admin verifies the Transaction ID. */
 (function(){
   'use strict';
   var PAYMENT_NUMBER='01889277663';
-  var methods={
-    bkash:{name:'bKash',logo:'siam-bkash-app-icon.png',dial:'*247#',color:'#ca2478',steps:['bKash অ্যাপ খুলুন অথবা *247# ডায়াল করুন।','Send Money নির্বাচন করুন।','এই নম্বরে টাকা পাঠান: '+PAYMENT_NUMBER,'অর্ডারের সঠিক পরিমাণ: ৳{amount}','টাকা পাঠানোর পর Transaction ID লিখে যাচাইয়ের আবেদন পাঠান।']},
-    nagad:{name:'নগদ',logo:'siam-nagad-app-icon.png',dial:'*167#',color:'#ed171f',steps:['Nagad অ্যাপ খুলুন অথবা *167# ডায়াল করুন।','Send Money নির্বাচন করুন।','এই নম্বরে টাকা পাঠান: '+PAYMENT_NUMBER,'অর্ডারের সঠিক পরিমাণ: ৳{amount}','টাকা পাঠানোর পর Transaction ID লিখে যাচাইয়ের আবেদন পাঠান।']},
-    rocket:{name:'Rocket',logo:'siam-rocket-app-icon.png',dial:'*322#',color:'#84268d',steps:['Rocket অ্যাপ খুলুন অথবা *322# ডায়াল করুন।','Send Money নির্বাচন করুন।','এই নম্বরে টাকা পাঠান: '+PAYMENT_NUMBER,'অর্ডারের সঠিক পরিমাণ: ৳{amount}','টাকা পাঠানোর পর Transaction ID লিখে যাচাইয়ের আবেদন পাঠান।']}
+  window.getInstantPayData=function(){
+    var panels=Array.prototype.slice.call(document.querySelectorAll('.st-payment-box'));
+    var panel=panels.find(function(x){return x.offsetParent!==null;});
+    if(!panel){alert('পেমেন্ট ফর্ম পাওয়া যায়নি। পেজ রিফ্রেশ করুন।');return null;}
+    var method=panel.querySelector('.st-payment-method-select').value;
+    var trx=panel.querySelector('.st-payment-trx').value.trim().toUpperCase().replace(/\s+/g,'');
+    if(!/^[A-Z0-9-]{6,30}$/.test(trx)){alert('সঠিক Transaction ID লিখুন।');panel.querySelector('.st-payment-trx').focus();return null;}
+    return {method:method,trx:trx};
   };
-  var style=document.createElement('style');
-  style.textContent=`
-  .st-payment-box{display:none!important}
-  #stOrderPay{position:fixed;inset:0;z-index:100500;background:#eef8f3;display:none;overflow:auto;font-family:inherit;color:#172033}
-  #stOrderPay.show{display:block}
-  #stOrderPay .st-wrap{max-width:680px;min-height:100%;margin:auto;padding:18px 18px calc(28px + env(safe-area-inset-bottom,0px))}
-  #stOrderPay .st-head{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:14px;padding:16px 18px;margin-bottom:22px;font-size:19px;font-weight:900}
-  #stOrderPay .st-close{border:0;border-radius:50%;width:38px;height:38px;background:#f1f5f9;font-size:24px;color:#64748b}
-  #stOrderPay .st-title{text-align:center;color:#667085;font-size:24px;font-weight:900;margin:24px 0 32px}
-  #stOrderPay .st-methods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
-  #stOrderPay .st-method{min-height:150px;border:1px solid #e7edf0;background:#fff;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:19px;font-weight:900;color:#26344d;box-shadow:0 4px 14px #2030500c}
-  #stOrderPay .st-method img{width:76px;height:76px;object-fit:contain}
-  #stOrderPay .st-back{border:0;background:#fff;color:#64748b;font-weight:800;padding:13px 16px;border-radius:12px;width:100%;text-align:left;margin-bottom:18px}
-  #stOrderPay .st-brand{background:#fff;border-radius:18px;padding:22px;text-align:center;font-size:27px;font-weight:900;margin:8px 0 14px}
-  #stOrderPay .st-mode,#stOrderPay .st-amount{background:#fff;border-radius:14px;padding:17px 20px;margin:12px 0;color:#667085;font-size:17px}
-  #stOrderPay .st-warning{border-radius:18px;padding:22px 20px;margin:14px 0;color:#fff;line-height:1.85;font-size:15px}
-  #stOrderPay .st-warning label{display:block;font-weight:900;margin-bottom:10px}
-  #stOrderPay .st-warning input{display:block;width:100%;box-sizing:border-box;padding:18px 16px;border:0;border-radius:18px;background:#fff;color:#172033;font:inherit;font-size:18px;margin:10px 0 20px}
-  #stOrderPay .st-number{font-weight:900;color:#ffe66b}
-  #stOrderPay .st-copy{border:0;border-radius:9px;padding:8px 13px;margin-left:8px;background:#650d3a55;color:#fff;font-weight:900}
-  #stOrderPay .st-actions{display:flex;gap:12px;margin-top:22px}
-  #stOrderPay .st-actions button{flex:1;border:0;border-radius:14px;padding:17px 10px;font-weight:900;font-size:16px;background:#b0002c;color:#fff}
-  #stOrderPay .st-actions .st-cancel{background:#e9eef5;color:#344054}
-  #stOrderPay .st-msg{font-size:13px;line-height:1.6;color:#b42318;min-height:20px;margin-top:8px}
-  @media(max-width:380px){#stOrderPay .st-wrap{padding:14px}#stOrderPay .st-method{min-height:130px}}
-  `;
-  document.head.appendChild(style);
-  var root=document.createElement('div');root.id='stOrderPay';root.innerHTML=`
-    <div class="st-wrap">
-      <div class="st-head"><span>পেমেন্ট সম্পন্ন করুন</span><button class="st-close" type="button" aria-label="বন্ধ">×</button></div>
-      <section id="stChoose">
-        <h2 class="st-title">পেমেন্ট করার মাধ্যম নির্বাচন করুন</h2>
-        <div class="st-methods">
-          <button type="button" class="st-method" data-method="bkash"><img src="siam-bkash-app-icon.png" alt="bKash"><span>bKash</span></button>
-          <button type="button" class="st-method" data-method="rocket"><img src="siam-rocket-app-icon.png" alt="Rocket"><span>ROCKET · রকেট</span></button>
-          <button type="button" class="st-method" data-method="nagad"><img src="siam-nagad-app-icon.png" alt="Nagad"><span>নগদ</span></button>
-        </div>
-      </section>
-      <section id="stDetails" hidden>
-        <button type="button" class="st-back">←　পেমেন্ট মাধ্যম বদলান</button>
-        <div class="st-brand" id="stBrand"></div>
-        <div class="st-mode">Manual payment · Send Money</div>
-        <div class="st-amount" id="stAmount"></div>
-        <div class="st-warning" id="stWarning">
-          <div style="font-size:22px;font-weight:900;text-align:center;margin-bottom:18px">ট্রানজেকশন আইডি দিন</div>
-          <label for="stTrx">ট্রানজেকশন আইডি দিন</label>
-          <input id="stTrx" type="text" maxlength="30" autocomplete="off" placeholder="ট্রানজেকশন আইডি দিন">
-          <ol id="stSteps" style="padding-left:22px;margin:0"></ol>
-          <div class="st-msg" id="stMsg"></div>
-        </div>
-        <div class="st-actions"><button type="button" class="st-cancel">বন্ধ</button><button type="button" id="stSubmit">যাচাইয়ের আবেদন পাঠান</button></div>
-      </section>
-    </div>`;
-  document.body.appendChild(root);
-  var current=null, resolver=null;
-  function close(value){root.classList.remove('show');root.setAttribute('aria-hidden','true');if(resolver){resolver(value||null);resolver=null;}current=null;}
-  root.querySelector('.st-close').addEventListener('click',function(){close(null)});
-  root.querySelector('.st-cancel').addEventListener('click',function(){close(null)});
-  root.querySelector('.st-back').addEventListener('click',function(){root.querySelector('#stDetails').hidden=true;root.querySelector('#stChoose').hidden=false;});
-  root.querySelectorAll('[data-method]').forEach(function(btn){btn.addEventListener('click',function(){
-    var key=btn.dataset.method, m=methods[key];if(!m)return;current=key;
-    root.querySelector('#stChoose').hidden=true;root.querySelector('#stDetails').hidden=false;
-    root.querySelector('#stBrand').textContent=m.name;
-    root.querySelector('#stBrand').style.color=m.color;
-    root.querySelector('#stWarning').style.background=m.color;
-    root.querySelector('#stAmount').textContent='৳ '+Number(window.__stOrderAmount||0).toFixed(2);
-    root.querySelector('#stTrx').value='';root.querySelector('#stMsg').textContent='';
-    var steps=m.steps.map(function(x){return '<li>'+x.replace('{amount}',Number(window.__stOrderAmount||0).toFixed(2)).replace(PAYMENT_NUMBER,'<span class="st-number">'+PAYMENT_NUMBER+'</span> <button type="button" class="st-copy">কপি</button>')+'</li>';}).join('');
-    root.querySelector('#stSteps').innerHTML=steps;
-    root.querySelectorAll('.st-copy').forEach(function(copy){copy.addEventListener('click',function(){var done=function(){copy.textContent='কপি হয়েছে ✓'};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(PAYMENT_NUMBER).then(done,function(){copy.textContent=PAYMENT_NUMBER});else{var t=document.createElement('textarea');t.value=PAYMENT_NUMBER;document.body.appendChild(t);t.select();try{document.execCommand('copy');done()}catch(e){copy.textContent=PAYMENT_NUMBER}t.remove();}})});
-  });});
-  root.querySelector('#stSubmit').addEventListener('click',function(){
-    var trx=root.querySelector('#stTrx').value.trim().toUpperCase().replace(/\s+/g,'');
-    if(!current){root.querySelector('#stMsg').textContent='পেমেন্ট মাধ্যম নির্বাচন করুন।';return;}
-    if(!/^[A-Z0-9-]{6,30}$/.test(trx)){root.querySelector('#stMsg').textContent='সঠিক Transaction ID লিখুন।';root.querySelector('#stTrx').focus();return;}
-    if(resolver){var done=resolver;resolver=null;root.classList.remove('show');root.setAttribute('aria-hidden','true');done({method:current,trx:trx});current=null;}
-  });
-  window.getInstantPayData=function(amount){
-    window.__stOrderAmount=Number(amount||0);
-    root.querySelector('#stChoose').hidden=false;root.querySelector('#stDetails').hidden=true;
-    root.classList.add('show');root.setAttribute('aria-hidden','false');
-    return new Promise(function(resolve){resolver=resolve;});
-  };
+  function makePanel(){
+    var box=document.createElement('section');box.className='st-payment-box';
+    box.innerHTML='<div class="st-payment-title">💳 নগদ / বিকাশ পেমেন্ট</div><div class="st-payment-number"><strong></strong><button type="button" class="st-payment-copy">নম্বর কপি</button></div><div class="st-payment-methods">নগদ অথবা বিকাশ — Send Money</div><div class="st-manual-fields" hidden><label>পেমেন্ট মাধ্যম<select class="st-payment-method-select"><option value="bkash">বিকাশ</option><option value="nagad">নগদ</option></select></label><label>Transaction ID<input class="st-payment-trx" type="text" maxlength="30" autocomplete="off" placeholder="পেমেন্টের Transaction ID লিখুন"></label><p class="st-payment-note">প্রথমে উপরের নম্বরে সঠিক পরিমাণ টাকা Send Money করুন। এরপর Transaction ID লিখে অর্ডার করুন। অ্যাডমিন টাকা যাচাই করে অর্ডার Processing করবে। PIN/OTP দেবেন না।</p></div>';
+    box.querySelector('strong').textContent=PAYMENT_NUMBER;
+    box.querySelector('button').addEventListener('click',function(){var btn=this;function done(){btn.textContent='কপি হয়েছে ✓';setTimeout(function(){btn.textContent='নম্বর কপি';},1600);}function fallback(){var i=document.createElement('textarea');i.value=PAYMENT_NUMBER;i.style.position='fixed';i.style.opacity='0';document.body.appendChild(i);i.select();try{document.execCommand('copy');done()}catch(e){btn.textContent=PAYMENT_NUMBER}i.remove()}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(PAYMENT_NUMBER).then(done,fallback);else fallback();});
+    return box;
+  }
+  function install(){document.querySelectorAll('.po-grid').forEach(function(grid){if(grid.nextElementSibling&&grid.nextElementSibling.classList.contains('st-payment-box'))return;var panel=makePanel();grid.insertAdjacentElement('afterend',panel);function sync(){var instant=!!grid.querySelector('.po.on[data-pay="Instant Pay"]');panel.hidden=!instant;panel.querySelector('.st-manual-fields').hidden=!instant;}grid.addEventListener('click',function(e){if(e.target.closest('.po'))setTimeout(sync,0)});sync();});}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
 })();
 </script>
 

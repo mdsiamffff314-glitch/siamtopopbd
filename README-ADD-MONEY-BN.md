@@ -93,8 +93,7 @@ Production activation still required for coupon redemption, referral rewards, se
 
 
 ### Instant Pay / সরাসরি বিকাশ-নগদ অর্ডার (নতুন)
-- পণ্য পেজে প্যাকেজ ও Player ID দেওয়ার পর Instant Pay নির্বাচন করে Buy Now চাপলে প্রথমে bKash/Nagad/Rocket বাছাইয়ের আলাদা পেজ খোলে।
-- মাধ্যম নির্বাচন করলে সেই মাধ্যমের আলাদা রঙ/লোগোসহ Send Money নির্দেশনা, পেমেন্ট নম্বর, সঠিক অর্ডার মূল্য এবং Transaction ID লেখার ঘর দেখায়।
+- পণ্য পেজে Instant Pay নির্বাচন করলে বিকাশ/নগদ বেছে Transaction ID দেওয়ার ফর্ম দেখা যায়।
 - সঠিক পরিমাণ Send Money করে Transaction ID জমা দিলে অর্ডার Pending অবস্থায় `/admin-money`-এর Customer Orders তালিকায় যাবে।
 - অ্যাডমিন বিকাশ/নগদ অ্যাপের transaction history-তে নম্বর, পরিমাণ ও Transaction ID মিলিয়ে তারপর Processing/Completed করবেন। টাকা যাচাই না করে Complete করবেন না।
 - একই Transaction ID Add Money আবেদন বা অন্য কোনো অর্ডারে আগে ব্যবহার হয়ে থাকলে সার্ভার সেটি প্রত্যাখ্যান করবে।
