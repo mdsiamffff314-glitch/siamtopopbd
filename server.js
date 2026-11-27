@@ -719,7 +719,7 @@ async function walletApi(req, res, pathname) {
     const matched = packageList.find(x => x.name === product || x.label === product);
     if (!matched || Number(matched.price) !== price || !Number.isFinite(price) || price <= 0) return sendJson(res, 400, { error: 'প্যাকেজ/মূল্য সঠিক নয়। পেজ রিফ্রেশ করে আবার চেষ্টা করুন।' });
     if (!/^\d{6,24}$/.test(gameUid)) return sendJson(res, 400, { error: 'সঠিক Free Fire UID দিন' });
-    if (!['bkash', 'nagad'].includes(paymentMethod)) return sendJson(res, 400, { error: 'বিকাশ অথবা নগদ নির্বাচন করুন' });
+    if (!['bkash', 'nagad', 'rocket'].includes(paymentMethod)) return sendJson(res, 400, { error: 'বিকাশ, নগদ অথবা রকেট নির্বাচন করুন' });
     if (!/^[A-Z0-9-]{6,30}$/.test(trx)) return sendJson(res, 400, { error: 'সঠিক Transaction ID দিন' });
     ledger.orders = ledger.orders || [];
     const duplicateDeposit = ledger.deposits.some(x => String(x.trx || '').trim().toUpperCase().replace(/\s+/g, '') === trx);
