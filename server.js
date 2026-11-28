@@ -3,6 +3,8 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const zlib = require('zlib');
+const shop2topupTest = require('./shop2topup-test');
+const shop2topupSimOrders = new Map();
 
 const GH_TOKEN = process.env['FFX-G'] || process.env.FFX_G || '';
 const GH_REPO = (process.env['FFX-REPO'] || process.env.FFX_REPO || process.env.RENDER_GIT_REPO_SLUG || '').trim();
@@ -727,6 +729,27 @@ function walletBalance(ledger, uid) {
   return Math.max(0, Math.round((added - spent) * 100) / 100);
 }
 async function walletApi(req, res, pathname) {
+  // Simulation-only Shop2Topup test endpoints. These never contact the provider.
+  if (pathname === '/api/wallet/shop2topup-test/catalog' && req.method === 'GET') {
+    return sendJson(res, 200, shop2topupTest.simulatedCatalog());
+  }
+  if (pathname === '/api/wallet/shop2topup-test/validate' && req.method === 'POST') {
+    const body = await readJson(req, 4096);
+    return sendJson(res, 200, shop2topupTest.simulatedPlayerValidation(body.playerId));
+  }
+  if (pathname === '/api/wallet/shop2topup-test/order' && req.method === 'POST') {
+    const body = await readJson(req, 4096);
+    try {
+      const result = shop2topupTest.simulatedOrder(body);
+      shop2topupSimOrders.set(result.order.order_id, result.order);
+      return sendJson(res, 201, result);
+    } catch (e) { return sendJson(res, 400, { success: false, error: e.message }); }
+  }
+  const testStatus = /^\/api\/wallet\/shop2topup-test\/orders\/([a-f0-9-]+)$/.exec(pathname);
+  if (req.method === 'GET' && testStatus) {
+    const order = shop2topupSimOrders.get(testStatus[1]);
+    return order ? sendJson(res, 200, { success: true, order }) : sendJson(res, 404, { success: false, error: 'Test order not found' });
+  }
   let user;
   try { user = await verifyFirebaseUser(req); }
   catch (e) { return sendJson(res, 401, { error: e.message || 'লগইন করুন' }); }
@@ -1029,6 +1052,34 @@ function handle(req, res) {
   } catch (e) {
     res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('400 Bad Request');
+  }
+
+  // Shop2Topup webhook URL validation endpoint.
+  // Acknowledges reachability checks only; it does not trust payloads or change orders.
+  // Event processing requires the provider's documented signature verification.
+  if (pathname === '/webhooks/shop2topup') {
+    if (req.method !== 'POST') {
+      res.writeHead(405, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Allow': 'POST' });
+      return res.end(JSON.stringify({ success: false, error: 'Method Not Allowed' }));
+    }
+    let received = 0;
+    let tooLarge = false;
+    req.on('data', chunk => { received += chunk.length; if (received > 64 * 1024) tooLarge = true; });
+    req.on('end', () => {
+      if (tooLarge) {
+        res.writeHead(413, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+        return res.end(JSON.stringify({ success: false, error: 'Payload too large' }));
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(JSON.stringify({ success: true, received: true, message: 'Webhook endpoint reachable; event not processed' }));
+    });
+    req.on('error', () => {
+      if (!res.headersSent) {
+        res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+        res.end(JSON.stringify({ success: false, error: 'Request read failed' }));
+      }
+    });
+    return;
   }
 
   if (pathname.startsWith('/api/')) {
