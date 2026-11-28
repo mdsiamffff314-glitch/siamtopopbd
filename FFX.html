@@ -916,6 +916,43 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .sf-dark{background:#081225!important;color:#e5efff!important}.sf-dark .sf-sheet,.sf-dark .sf-card{background:#111f38!important;color:#e5efff!important;border-color:#294365!important}.sf-dark .sf-sheet-head h2,.sf-dark .sf-card p{color:#d2def2!important}.sf-dark .sf-field{background:#0b1730!important;color:#fff!important;border-color:#355078!important}.sf-welcome{position:fixed;inset:0;z-index:10001;display:grid;place-items:center;background:radial-gradient(circle at 50% 40%,#1d4ed8,#06122c 68%);color:white;text-align:center;padding:24px;animation:sfWelcomeFade 3.2s ease forwards;pointer-events:none}.sf-welcome b{font-size:clamp(30px,8vw,54px);letter-spacing:2px;text-shadow:0 0 24px #38bdf8;animation:sfWelcomePulse 1.2s ease-in-out infinite alternate}.sf-welcome small{display:block;margin-top:12px;letter-spacing:3px}@keyframes sfWelcomePulse{to{transform:scale(1.06);filter:brightness(1.3)}}@keyframes sfWelcomeFade{0%,70%{opacity:1}100%{opacity:0;visibility:hidden}}
 </style>
 
+<style>
+/* SIAM personal profile banner */
+.siam-profile-banner{width:100%;border:0;border-radius:22px;padding:15px 18px;margin:12px 0 14px;display:flex;align-items:center;gap:15px;text-align:left;color:#fff;cursor:pointer;background:linear-gradient(115deg,#31005f,#7020b8 52%,#a34bea);box-shadow:0 8px 24px rgba(92,25,155,.28);position:relative;overflow:hidden}
+.siam-profile-banner:before{content:"";position:absolute;width:180px;height:180px;border:1px solid rgba(255,255,255,.18);border-radius:50%;right:-38px;top:-82px;box-shadow:0 0 0 16px rgba(255,255,255,.05),0 0 0 34px rgba(255,255,255,.04)}
+.siam-profile-banner img{width:76px;height:76px;object-fit:cover;object-position:center 22%;border:3px solid #e7c8ff;border-radius:18px;flex-shrink:0;position:relative}
+.siam-profile-banner .siam-banner-copy{display:flex;flex-direction:column;gap:5px;position:relative;z-index:1}
+.siam-profile-banner .siam-banner-title{font-size:18px;font-weight:900;letter-spacing:.3px}
+.siam-profile-banner .siam-banner-sub{font-size:13px;font-weight:700;color:#f1ddff}
+.siam-profile-banner .siam-banner-cta{font-size:12px;font-weight:800;background:#fff;color:#64209d;border-radius:20px;padding:6px 12px;width:max-content;margin-top:2px}
+.siam-profile-banner .siam-banner-arrow{margin-left:auto;font-size:25px;position:relative}
+.siam-profile-modal{display:none;position:fixed;inset:0;z-index:999999;background:rgba(12,4,22,.78);padding:16px;overflow-y:auto;align-items:center;justify-content:center}
+.siam-profile-modal.open{display:flex}
+.siam-profile-panel{width:min(100%,480px);max-height:92vh;overflow:auto;background:#fff;border-radius:24px;box-shadow:0 20px 70px rgba(0,0,0,.4);position:relative;color:#241333}
+.siam-profile-cover{height:190px;background:linear-gradient(135deg,#31005f,#7624b8,#b66aff);position:relative;display:flex;justify-content:center;align-items:flex-end;padding-bottom:0}
+.siam-profile-cover img{width:116px;height:116px;object-fit:cover;object-position:center 20%;border:5px solid white;border-radius:25px;transform:translateY(38px);box-shadow:0 8px 22px #28004455}
+.siam-profile-close{position:absolute;right:13px;top:12px;width:36px;height:36px;border:0;border-radius:50%;background:#ffffffed;color:#45106d;font-size:24px;cursor:pointer}
+.siam-profile-body{padding:52px 22px 24px}
+.siam-profile-body h2{text-align:center;color:#6721a4;font-size:27px;font-weight:900;margin:0 0 4px}
+.siam-profile-tag{text-align:center;color:#7d48a6;font-weight:800;font-size:13px;margin-bottom:20px}
+.siam-profile-section{background:#f7f0ff;border:1px solid #ead8fb;border-radius:15px;padding:13px 15px;margin:11px 0}
+.siam-profile-section h3{margin:0 0 7px;color:#64209d;font-size:16px;font-weight:900}
+.siam-profile-section p{margin:0;color:#382747;font-size:14px;line-height:1.75;font-weight:600}
+.siam-profile-quote{background:linear-gradient(110deg,#4b087e,#8d35c7);color:#fff;text-align:center;border-radius:15px;padding:15px;font-weight:900;line-height:1.6;margin-top:14px}
+@media(max-width:480px){.siam-profile-banner{padding:12px;border-radius:18px}.siam-profile-banner img{width:66px;height:66px}.siam-profile-banner .siam-banner-title{font-size:16px}.siam-profile-cover{height:165px}}
+
+/* SIAM wide logo-style profile banner using the user's original photo */
+.siam-profile-banner{min-height:158px;padding:14px 18px;background-image:url('siam-profile-banner.jpg');background-size:100% 100%;background-position:center;background-repeat:no-repeat;gap:0;}
+.siam-profile-banner:before{display:none}
+.siam-profile-banner>img{display:none}
+.siam-profile-banner .siam-banner-copy{margin-left:28%;max-width:58%;text-shadow:0 2px 8px #16002f;}
+.siam-profile-banner .siam-banner-title{font-size:clamp(17px,3.8vw,23px);letter-spacing:.5px}
+.siam-profile-banner .siam-banner-sub{font-size:clamp(11px,2.8vw,14px)}
+.siam-profile-banner .siam-banner-cta{background:linear-gradient(110deg,#fff,#f0dcff);box-shadow:0 3px 12px #17002f88}
+.siam-profile-banner .siam-banner-arrow{margin-left:auto;text-shadow:0 0 12px #c78cff}
+@media(max-width:480px){.siam-profile-banner{min-height:132px;padding:10px 9px;border-radius:17px;background-size:100% 100%}.siam-profile-banner .siam-banner-copy{margin-left:27%;max-width:65%;gap:4px}.siam-profile-banner .siam-banner-title{font-size:15px}.siam-profile-banner .siam-banner-sub{font-size:10px}.siam-profile-banner .siam-banner-cta{font-size:10px;padding:5px 8px}.siam-profile-banner .siam-banner-arrow{font-size:20px}.siam-profile-cover{height:165px}}
+
+</style>
 </head>
 <body>
 <video id="siamPinkBgVideo" autoplay muted loop playsinline preload="auto" aria-hidden="true">
@@ -988,9 +1025,17 @@ body:before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;bac
   </div>
 
 
-  <div class="sf-search" role="search"><span class="sf-search-ico">⌕</span><input id="sfProductSearch" type="search" placeholder="প্রোডাক্ট খুঁজুন... যেমন Weekly, UID, Likes" aria-label="প্রোডাক্ট খুঁজুন"><button type="button" id="sfClearSearch" class="sf-tool">Clear</button></div>
-  <section class="sf-offer" aria-label="Special offer"><strong>⚡ SIAM Special Offers</strong><p>চলতি অফার ও কুপন জানতে আমাদের অফিসিয়াল Telegram চ্যানেল দেখুন।</p><div class="sf-offer-row"><span>Daily offer refresh in</span><span class="sf-timer" id="sfOfferTimer">--:--:--</span><button type="button" id="sfOfferOpen">Offers</button></div></section>
-  <div class="sf-toolbar" aria-label="Quick features">
+
+  <button type="button" class="siam-profile-banner" id="siamProfileOpen" aria-label="সিয়ামের পরিচিতি দেখতে ক্লিক করুন">
+    <img src="siam-profile.jpg" alt="সিয়ামের ছবি">
+    <span class="siam-banner-copy">
+      <span class="siam-banner-title">SIAM — আমার পরিচিতি</span>
+      <span class="siam-banner-sub">Founder · SIAM TOP UP FF</span>
+      <span class="siam-banner-cta">আমার সম্পর্কে জানতে ক্লিক করুন</span>
+    </span>
+    <span class="siam-banner-arrow">›</span>
+  </button>
+<div class="sf-toolbar" aria-label="Quick features">
     <button class="sf-tool" data-sf-open="notifications">🔔 Notifications</button><button class="sf-tool" data-sf-open="coupon">🎟 Coupon</button><button class="sf-tool" data-sf-open="refer">🎁 Refer & Earn</button><button class="sf-tool" data-sf-open="tracking">📦 Track Order</button><button class="sf-tool" data-sf-open="review">⭐ Review</button><button class="sf-tool" data-sf-open="saveduid">🆔 Saved UID</button><button class="sf-tool" data-sf-open="reorder">🔁 Reorder</button><button class="sf-tool" data-sf-open="invoice">🧾 Invoice</button><button class="sf-tool" data-sf-open="rewards">🏆 Rewards</button><button class="sf-tool" data-sf-open="theme">🌙 Theme</button><button class="sf-tool" data-sf-open="faq">❓ Help</button><button class="sf-tool" data-sf-open="pricealert">🔔 Price Alert</button><button class="sf-tool" data-sf-open="payments">💳 Payments</button><button class="sf-tool" data-sf-open="leaderboard">🥇 Top Buyers</button><button class="sf-tool" data-sf-open="stock">📦 Stock</button><button class="sf-tool" data-sf-open="bestdeal">💎 Best Deal</button>
   </div>
 
@@ -2553,7 +2598,7 @@ var isLoggedIn = window.isLoggedIn || false;
     submitOrder(uid);
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'ff',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'ff',product:sel.name,price:sel.price,gameUid:uid});}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'ff',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'ff',product:sel.name,price:sel.price,gameUid:uid});}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); });
   upd();
 })();
@@ -2639,7 +2684,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'uid',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'uid',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'uid',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'uid',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -2726,7 +2771,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'wm',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'wm',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'wm',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'wm',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -2813,7 +2858,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'wl',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'wl',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'wl',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'wl',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -2900,7 +2945,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'lu',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'lu',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'lu',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'lu',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -2987,7 +3032,7 @@ var isLoggedIn = window.isLoggedIn || false;
   });
   async function walletApi(path, body){var u=window.myAuth&&window.myAuth.currentUser;if(!u)throw Error('আগে Login করুন');var token=await u.getIdToken();var r=await fetch(path,{method:body?'POST':'GET',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:body?JSON.stringify(body):undefined});var j=await r.json().catch(function(){return {}});if(!r.ok)throw Error(j.error||'সার্ভারে সমস্যা হয়েছে');return j;}
   async function loadBalance(){try{var d=await walletApi('/api/wallet/me');BALANCE=Number(d.balance||0);upd();}catch(e){toast(e.message);}}
-  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=getInstantPayData();if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'in',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'in',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
+  async function submitOrder(uid){buy.disabled=true;try{var d;if(sel.pay==='Instant Pay'){var mp=await getInstantPayData(sel.price);if(!mp){buy.disabled=false;return;}toast('পেমেন্ট আবেদন জমা হচ্ছে...');d=await walletApi('/api/wallet/manual-order',{productKey:'in',product:sel.name,price:sel.price,gameUid:uid,paymentMethod:mp.method,trx:mp.trx});}else{if(BALANCE<sel.price){toast('Wallet-এ পর্যাপ্ত টাকা নেই');return;}toast('অর্ডার জমা হচ্ছে...');d=await walletApi('/api/wallet/order',{productKey:'in',product:sel.name,price:sel.price,gameUid:uid});BALANCE=Number(d.balance||0);upd();}toast(d.message||'অর্ডার গ্রহণ করা হয়েছে');}catch(e){toast(e.message);if(sel.pay==='Wallet Pay')await loadBalance();}finally{buy.disabled=false;}}
   window.addEventListener('firebase-login-state', function(e){ isLoggedIn = !!e.detail; upd(); if(isLoggedIn)loadBalance(); });
   if(window.myAuth&&window.myAuth.currentUser){isLoggedIn=true;loadBalance();}
   upd();
@@ -3512,28 +3557,30 @@ var isLoggedIn = window.isLoggedIn || false;
 </script>
 
 <script>
-/* Siam Top Up manual payment form. Payments remain pending until admin verifies the Transaction ID. */
+/* SIAM TOP UP FF — Buy Now opens provider-specific manual payment flow */
 (function(){
-  'use strict';
-  var PAYMENT_NUMBER='01889277663';
-  window.getInstantPayData=function(){
-    var panels=Array.prototype.slice.call(document.querySelectorAll('.st-payment-box'));
-    var panel=panels.find(function(x){return x.offsetParent!==null;});
-    if(!panel){alert('পেমেন্ট ফর্ম পাওয়া যায়নি। পেজ রিফ্রেশ করুন।');return null;}
-    var method=panel.querySelector('.st-payment-method-select').value;
-    var trx=panel.querySelector('.st-payment-trx').value.trim().toUpperCase().replace(/\s+/g,'');
-    if(!/^[A-Z0-9-]{6,30}$/.test(trx)){alert('সঠিক Transaction ID লিখুন।');panel.querySelector('.st-payment-trx').focus();return null;}
-    return {method:method,trx:trx};
-  };
-  function makePanel(){
-    var box=document.createElement('section');box.className='st-payment-box';
-    box.innerHTML='<div class="st-payment-title">💳 নগদ / বিকাশ পেমেন্ট</div><div class="st-payment-number"><strong></strong><button type="button" class="st-payment-copy">নম্বর কপি</button></div><div class="st-payment-methods">নগদ অথবা বিকাশ — Send Money</div><div class="st-manual-fields" hidden><label>পেমেন্ট মাধ্যম<select class="st-payment-method-select"><option value="bkash">বিকাশ</option><option value="nagad">নগদ</option></select></label><label>Transaction ID<input class="st-payment-trx" type="text" maxlength="30" autocomplete="off" placeholder="পেমেন্টের Transaction ID লিখুন"></label><p class="st-payment-note">প্রথমে উপরের নম্বরে সঠিক পরিমাণ টাকা Send Money করুন। এরপর Transaction ID লিখে অর্ডার করুন। অ্যাডমিন টাকা যাচাই করে অর্ডার Processing করবে। PIN/OTP দেবেন না।</p></div>';
-    box.querySelector('strong').textContent=PAYMENT_NUMBER;
-    box.querySelector('button').addEventListener('click',function(){var btn=this;function done(){btn.textContent='কপি হয়েছে ✓';setTimeout(function(){btn.textContent='নম্বর কপি';},1600);}function fallback(){var i=document.createElement('textarea');i.value=PAYMENT_NUMBER;i.style.position='fixed';i.style.opacity='0';document.body.appendChild(i);i.select();try{document.execCommand('copy');done()}catch(e){btn.textContent=PAYMENT_NUMBER}i.remove()}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(PAYMENT_NUMBER).then(done,fallback);else fallback();});
-    return box;
-  }
-  function install(){document.querySelectorAll('.po-grid').forEach(function(grid){if(grid.nextElementSibling&&grid.nextElementSibling.classList.contains('st-payment-box'))return;var panel=makePanel();grid.insertAdjacentElement('afterend',panel);function sync(){var instant=!!grid.querySelector('.po.on[data-pay="Instant Pay"]');panel.hidden=!instant;panel.querySelector('.st-manual-fields').hidden=!instant;}grid.addEventListener('click',function(e){if(e.target.closest('.po'))setTimeout(sync,0)});sync();});}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+'use strict';
+var NUMBER='01889277663',modal=null,resolver=null,chosen='';
+var providers={
+ bkash:{name:'bKash',color:'#d81b60',instruction:'bKash অ্যাপ খুলুন অথবা *247# ডায়াল করুন। Send Money নির্বাচন করে নিচের নম্বরে টাকা পাঠান।'},
+ nagad:{name:'নগদ',color:'#ed171f',instruction:'Nagad অ্যাপ খুলুন অথবা *167# ডায়াল করুন। Send Money নির্বাচন করে নিচের নম্বরে টাকা পাঠান।'},
+ rocket:{name:'ROCKET · রকেট',color:'#84268d',instruction:'Rocket অ্যাপ খুলুন অথবা *322# ডায়াল করুন। Send Money নির্বাচন করে নিচের নম্বরে টাকা পাঠান।'}
+};
+function close(){var r=resolver;resolver=null;if(modal)modal.classList.remove('open');if(r)r(null);}
+function init(){
+ if(modal)return;
+ modal=document.createElement('div');modal.className='siam-pay-modal';
+ modal.innerHTML='<section class="siam-pay-card" role="dialog" aria-modal="true"><header><b>পেমেন্ট মাধ্যম নির্বাচন করুন</b><button type="button" class="sp-close">×</button></header><div class="sp-amount"></div><div class="sp-methods"><button data-method="bkash"><i>b</i><b>bKash</b></button><button data-method="nagad"><i>ন</i><b>নগদ</b></button><button data-method="rocket"><i>➤</i><b>ROCKET</b></button></div><section class="sp-details" hidden><button type="button" class="sp-back">← মাধ্যম বদলান</button><h3 class="sp-brand"></h3><p class="sp-instruction"></p><div class="sp-number"><b>'+NUMBER+'</b><button type="button" class="sp-copy">নম্বর কপি</button></div><p class="sp-safe">সঠিক পরিমাণ Send Money করুন। PIN/OTP কাউকে দেবেন না।</p><button type="button" class="sp-sent">আমি টাকা পাঠিয়েছি</button><div class="sp-trx-wrap" hidden><label>টাকা পাঠানোর পর Transaction ID লিখুন</label><input class="sp-trx" maxlength="30" autocomplete="off" placeholder="Transaction ID"><p>Transaction ID দেওয়ার পর আবেদন যাচাইয়ের জন্য জমা হবে। অ্যাডমিন পেমেন্ট মিলিয়ে অর্ডার Processing করবেন।</p><button type="button" class="sp-verify">Verify &amp; Submit</button></div></section><p class="sp-error"></p><button type="button" class="sp-cancel">বাতিল</button></section>';
+ document.body.appendChild(modal);
+ var st=document.createElement('style');st.textContent='.siam-pay-modal{position:fixed;inset:0;z-index:1000000;background:#0c0a1ebd;display:none;align-items:center;justify-content:center;padding:16px;overflow:auto}.siam-pay-modal.open{display:flex}.siam-pay-card{width:min(100%,520px);max-height:92dvh;overflow:auto;background:#f7f8ff;border-radius:22px;padding:18px;color:#172554;box-shadow:0 22px 70px #0006}.siam-pay-card header{display:flex;justify-content:space-between;align-items:center;font-size:18px;margin-bottom:16px}.sp-close,.sp-back,.sp-cancel{border:0;border-radius:10px;padding:10px 14px;background:#e8edf7;color:#334155;font-weight:800}.sp-amount{padding:14px;background:#fff;border-radius:12px;font-weight:900;font-size:20px;margin-bottom:14px}.sp-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.sp-methods button{min-height:110px;border:1px solid #e1e7f4;border-radius:15px;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;font:inherit;color:#26344d}.sp-methods i{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:#fce7f3;color:#d81b60;font-size:25px;font-weight:900;font-style:normal}.sp-methods [data-method=nagad] i{background:#fee2e2;color:#ed171f}.sp-methods [data-method=rocket] i{background:#f3e8ff;color:#84268d}.sp-details{margin-top:14px}.sp-back{margin-bottom:12px}.sp-brand{text-align:center;background:#fff;border-radius:14px;padding:14px;margin:0 0 12px;font-size:23px}.sp-instruction{background:#fff;border-radius:12px;padding:14px;line-height:1.7}.sp-number{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#fff;border:1px dashed #bac8e3;border-radius:12px;padding:13px;margin:12px 0}.sp-number b{font-size:20px;letter-spacing:.5px}.sp-copy{border:0;border-radius:9px;padding:10px;background:#2457d6;color:#fff;font-weight:800}.sp-safe{font-size:13px;color:#64748b}.sp-sent,.sp-verify{width:100%;border:0;border-radius:12px;padding:14px;background:#2457d6;color:#fff;font-size:16px;font-weight:900;margin:8px 0}.sp-trx-wrap{background:#fff;border-radius:14px;padding:14px;margin-top:10px}.sp-trx-wrap label{display:block;font-weight:900;margin-bottom:8px}.sp-trx{box-sizing:border-box;width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:10px;font:inherit}.sp-trx-wrap p{font-size:12px;line-height:1.6;color:#64748b}.sp-error{color:#b42318;font-size:13px;min-height:18px}.sp-cancel{width:100%;margin-top:8px}@media(max-width:380px){.siam-pay-card{padding:13px}.sp-methods{gap:6px}.sp-methods button{font-size:13px}}';document.head.appendChild(st);
+ modal.querySelector('.sp-close').onclick=close;modal.querySelector('.sp-cancel').onclick=close;
+ modal.querySelector('.sp-back').onclick=function(){modal.querySelector('.sp-details').hidden=true;modal.querySelector('.sp-methods').hidden=false;};
+ modal.querySelectorAll('[data-method]').forEach(function(b){b.onclick=function(){chosen=b.dataset.method;var p=providers[chosen];modal.querySelector('.sp-methods').hidden=true;modal.querySelector('.sp-details').hidden=false;modal.querySelector('.sp-brand').textContent=p.name;modal.querySelector('.sp-brand').style.color=p.color;modal.querySelector('.sp-instruction').textContent=p.instruction;modal.querySelector('.sp-amount').style.borderLeft='5px solid '+p.color;modal.querySelector('.sp-trx-wrap').hidden=true;modal.querySelector('.sp-sent').hidden=false;modal.querySelector('.sp-trx').value='';modal.querySelector('.sp-error').textContent='';};});
+ modal.querySelector('.sp-copy').onclick=function(){var b=this;navigator.clipboard.writeText(NUMBER).then(function(){b.textContent='কপি হয়েছে ✓';setTimeout(function(){b.textContent='নম্বর কপি';},1500);}).catch(function(){modal.querySelector('.sp-error').textContent='নম্বরটি হাতে কপি করুন: '+NUMBER;});};
+ modal.querySelector('.sp-sent').onclick=function(){modal.querySelector('.sp-trx-wrap').hidden=false;this.hidden=true;modal.querySelector('.sp-trx').focus();};
+ modal.querySelector('.sp-verify').onclick=function(){var trx=modal.querySelector('.sp-trx').value.trim().toUpperCase().replace(/\s+/g,'');if(!/^[A-Z0-9-]{6,30}$/.test(trx)){modal.querySelector('.sp-error').textContent='সঠিক Transaction ID লিখুন।';return;}var r=resolver;resolver=null;modal.classList.remove('open');if(r)r({method:chosen,trx:trx});};
+}
+window.getInstantPayData=function(amount){init();modal.querySelector('.sp-amount').textContent='অর্ডারের পরিমাণ: ৳ '+Number(amount||0).toFixed(2);modal.querySelector('.sp-methods').hidden=false;modal.querySelector('.sp-details').hidden=true;modal.querySelector('.sp-error').textContent='';modal.classList.add('open');return new Promise(function(resolve){resolver=resolve;});};
 })();
 </script>
 
@@ -3619,12 +3666,10 @@ var isLoggedIn = window.isLoggedIn || false;
   <section id="wdStepDetails" hidden>
    <button type="button" class="wd-back" id="wdBackMethod">←　পেমেন্ট মাধ্যম বদলান</button>
    <div class="wd-detail-brand" id="wdBrand">bKash</div>
-   <p class="wd-sub">Auto payment · Send Money</p>
+   <p class="wd-sub">Send Money · Admin verification</p>
    <div style="background:#fff;border-radius:12px;padding:14px;margin:10px 0;color:#64748b;font-weight:800">৳ <span id="wdAmountHeading">0</span></div>
    <div class="wd-warning">
-    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px">ট্রানজেকশন আইডি দিন</div>
-    <label for="wdTrx" style="color:#fff">ট্রানজেকশন আইডি দিন</label>
-    <input id="wdTrx" maxlength="40" autocomplete="off" placeholder="ট্রানজেকশন আইডি দিন" style="background:#fff;color:#172033;font-size:16px">
+    <div style="font-size:18px;font-weight:900;text-align:center;margin-bottom:16px">প্রথমে টাকা পাঠান</div>
     <ul style="padding-left:20px;margin:16px 0">
      <li id="wdDialInstruction">*247# ডায়াল করে আপনার bKash মেনুতে যান অথবা bKash অ্যাপ খুলুন।</li>
      <li>Send Money-এ ক্লিক করুন।</li>
@@ -3632,12 +3677,13 @@ var isLoggedIn = window.isLoggedIn || false;
      <li>টাকার পরিমাণ: <b id="wdAmountText" style="color:#ffe66b">0</b></li>
      <li>নিশ্চিত করে আপনার PIN দিয়ে Send Money সম্পন্ন করুন। PIN/OTP এই ওয়েবসাইটে দেবেন না।</li>
      <li>টাকা পাঠানোর পর Transaction ID কপি করুন।</li>
-     <li>Transaction ID লিখে যাচাইয়ের আবেদন পাঠান।</li>
     </ul>
+    <label for="wdTrx" style="color:#fff;font-weight:900">টাকা পাঠানোর পর Transaction ID লিখুন</label>
+    <input id="wdTrx" maxlength="40" autocomplete="off" placeholder="Transaction ID লিখুন" style="background:#fff;color:#172033;font-size:16px">
     <input id="wdAmountShown" type="text" readonly aria-label="জমার পরিমাণ" style="display:none">
    </div>
    <div class="wd-msg" id="wdMsg" aria-live="polite"></div>
-   <div class="wd-actions"><button class="wd-cancel" type="button" id="wdCancel">বন্ধ</button><button type="button" id="wdSubmit">যাচাই</button></div>
+   <div class="wd-actions"><button class="wd-cancel" type="button" id="wdCancel">বন্ধ</button><button type="button" id="wdSubmit">Transaction ID যাচাইয়ের আবেদন</button></div>
   </section>
  </section>
 </div>
@@ -3756,7 +3802,7 @@ if(which==='bestdeal'){var nodes=Array.from(document.querySelectorAll('.pk[data-
 }
 function close(){modal.classList.remove('show');modal.setAttribute('aria-hidden','true')}
 document.getElementById('sfModalClose').onclick=close;modal.addEventListener('click',function(e){if(e.target===modal)close()});document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
-document.addEventListener('click',function(e){var b=e.target.closest('[data-sf-open]');if(!b)return;e.preventDefault();if(b.closest('#accPanel')){var x=document.getElementById('accClose');if(x)x.click();}open(b.dataset.sfOpen)});document.getElementById('sfOfferOpen').onclick=function(){open('offers')};
+document.addEventListener('click',function(e){var b=e.target.closest('[data-sf-open]');if(!b)return;e.preventDefault();if(b.closest('#accPanel')){var x=document.getElementById('accClose');if(x)x.click();}open(b.dataset.sfOpen)});
 body.addEventListener('click',function(e){var b=e.target.closest('[data-sf-go]');if(b){close();location.hash=b.dataset.sfGo}});
 // Remember last opened product page for the one-tap reorder shortcut.
 function rememberProduct(){var h=(location.hash||'').replace(/^#/,'');if(['ff-likes','uid-topup','weekly-monthly','weekly-lite','level-up-pass','indonesia-server'].indexOf(h)>=0)write('last_product_hash',h)}rememberProduct();window.addEventListener('hashchange',rememberProduct);
@@ -3838,6 +3884,39 @@ body.sf-dark .brand-name{color:#eff6ff}
 </script>
 \n
 
+
+
+<div class="siam-profile-modal" id="siamProfileModal" role="dialog" aria-modal="true" aria-labelledby="siamProfileName">
+  <div class="siam-profile-panel">
+    <div class="siam-profile-cover">
+      <button type="button" class="siam-profile-close" id="siamProfileClose" aria-label="বন্ধ করুন">×</button>
+      <img src="siam-profile.jpg" alt="সিয়ামের ছবি">
+    </div>
+    <div class="siam-profile-body">
+      <h2 id="siamProfileName">SIAM</h2>
+      <div class="siam-profile-tag">FOUNDER OF SIAM TOP UP FF</div>
+      <div class="siam-profile-section"><h3>👤 আমার সম্পর্কে</h3><p>আসসালামু আলাইকুম! আমি সিয়াম। আমি একজন শিক্ষার্থী। আমার বাড়ি যশোর জেলার একটি গ্রামে। প্রযুক্তির প্রতি আমার গভীর আগ্রহ এবং নতুন কিছু শেখার প্রবল ইচ্ছা রয়েছে।</p></div>
+      <div class="siam-profile-section"><h3>🚀 আমার স্বপ্ন ও লক্ষ্য</h3><p>আমার স্বপ্ন একজন দক্ষ ইঞ্জিনিয়ার ও সফটওয়্যার প্রোগ্রামার হওয়া। ভবিষ্যতে সফটওয়্যার ডেভেলপমেন্ট, প্রোগ্রামিং এবং সাইবার সিকিউরিটি (Ethical Hacking) নিয়ে কাজ করতে চাই।</p></div>
+      <div class="siam-profile-section"><h3>🌐 আমার উদ্যোগ — SIAM TOP UP FF</h3><p>এই ওয়েবসাইটটি আমার নিজের তৈরি একটি উদ্যোগ। এর মাধ্যমে গেমারদের সহজে ও নির্ভরযোগ্যভাবে ডায়মন্ড টপ-আপ সেবা দেওয়ার চেষ্টা করছি।</p></div>
+      <div class="siam-profile-section"><h3>💎 আমাদের সেবার প্রতিশ্রুতি</h3><p>অর্ডার সফল হলে ডায়মন্ড ডেলিভারি দেওয়া হবে। কোনো কারণে ডায়মন্ড ডেলিভারি ব্যর্থ হলে অর্ডারের নিয়ম অনুযায়ী টাকা ফেরতের ব্যবস্থা থাকবে। গ্রাহকদের সন্তুষ্টি ও বিশ্বাসই আমাদের অগ্রাধিকার।</p></div>
+      <div class="siam-profile-quote">ছোট্ট একটি গ্রাম থেকে বড় স্বপ্নের পথে। 💜</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+ const open=document.getElementById('siamProfileOpen');
+ const modal=document.getElementById('siamProfileModal');
+ const close=document.getElementById('siamProfileClose');
+ if(!open||!modal||!close)return;
+ function hide(){modal.classList.remove('open');document.body.style.overflow='';}
+ open.addEventListener('click',()=>{modal.classList.add('open');document.body.style.overflow='hidden';});
+ close.addEventListener('click',hide);
+ modal.addEventListener('click',e=>{if(e.target===modal)hide();});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});
+})();
+</script>
 
 </body>
 </html>

@@ -98,3 +98,12 @@ Production activation still required for coupon redemption, referral rewards, se
 - অ্যাডমিন বিকাশ/নগদ অ্যাপের transaction history-তে নম্বর, পরিমাণ ও Transaction ID মিলিয়ে তারপর Processing/Completed করবেন। টাকা যাচাই না করে Complete করবেন না।
 - একই Transaction ID Add Money আবেদন বা অন্য কোনো অর্ডারে আগে ব্যবহার হয়ে থাকলে সার্ভার সেটি প্রত্যাখ্যান করবে।
 - এই পদ্ধতি কোনো automatic bKash/Nagad gateway নয়; এটি manual verification।
+
+
+### Buy Now → bKash / Nagad / Rocket payment flow (28 Nov 2026)
+- Instant Pay নির্বাচন করে Buy Now চাপলে প্রথমে bKash, Nagad ও Rocket-এর মধ্যে মাধ্যম নির্বাচন করার আলাদা পপআপ আসে।
+- মাধ্যম নির্বাচন করলে সংশ্লিষ্ট USSD/app নির্দেশনা, পেমেন্ট নম্বর ও অর্ডারের পরিমাণ দেখায়।
+- ব্যবহারকারী “আমি টাকা পাঠিয়েছি” চাপার পরেই Transaction ID ইনপুট দেখা যায়; ID দিয়ে Verify & Submit করলে manual-order আবেদন Pending হয়।
+- Rocket এখন product manual-order server validation-এও অনুমোদিত।
+- এটি এখনো manual verification: অ্যাডমিন payment app-এর transaction history-তে ID ও amount মিলিয়ে তারপর অর্ডার Processing করবেন। কোনো gateway/API credential এই ZIP-এ নেই।
+- Add Money ফ্লোতেও Transaction ID field নির্দেশনার নিচে সরানো হয়েছে, যাতে টাকা পাঠানোর আগে ID চাওয়া না হয়।
