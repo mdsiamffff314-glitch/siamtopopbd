@@ -18,17 +18,48 @@ const PORT = process.env.PORT || 3000;
 const ROOT_DIR = __dirname;
 
 const ADMIN_PASSWORD = process.env['FFX-PASS'] || process.env.FFX_PASS || '';
-// Wallet data must live on Render Persistent Disk (DATA_DIR=/var/data).
-// When GitHub sync is enabled, its temporary config/upload cache stays in /tmp
-// so GitHub sync does not try to create folders on the wallet disk.
-const DEFAULT_DATA_DIR = process.env.RENDER ? '/var/data' : path.join(ROOT_DIR, 'data');
-const DATA_DIR = path.resolve(process.env.DATA_DIR || DEFAULT_DATA_DIR);
-const CACHE_DIR = USE_GH ? path.join(os.tmpdir(), 'siamtopup-cache') : DATA_DIR;
-const UPLOAD_DIR = path.join(CACHE_DIR, 'uploads');
-const CONFIG_FILE = path.join(CACHE_DIR, 'config.json');
+// Runtime cache only. Wallet balances are stored in Firestore, not Render's ephemeral disk.
+const DATA_DIR = path.join(os.tmpdir(), 'siamtopup-runtime-data');
+const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
+const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
 const WALLET_FILE = path.join(DATA_DIR, 'wallet-ledger.json');
 const FIREBASE_PROJECT_ID = 'siam-123fd';
 let firebaseCerts = null, firebaseCertExpiry = 0;
+let walletFirestore = null;
+
+function getWalletFirestore() {
+  if (walletFirestore) return walletFirestore;
+  let serviceAccount;
+  const keyFile = String(process.env.FIREBASE_SERVICE_ACCOUNT_FILE || '').trim();
+  const keyJson = String(process.env.FIREBASE_SERVICE_ACCOUNT_JSON || '').trim();
+  try {
+    if (keyFile) serviceAccount = JSON.parse(fs.readFileSync(keyFile, 'utf8'));
+    else if (keyJson) serviceAccount = JSON.parse(keyJson);
+    else throw new Error('Render-এ Firebase service account Secret File সেট করা নেই');
+  } catch (e) {
+    throw new Error('Firebase service account key পড়া যাচ্ছে না: ' + e.message);
+  }
+  if (!serviceAccount || serviceAccount.project_id !== FIREBASE_PROJECT_ID) {
+    throw new Error('Firebase service account ভুল Project-এর। siam-123fd Project-এর key ব্যবহার করুন।');
+  }
+  const admin = require('firebase-admin');
+  if (!admin.apps.length) {
+    admin.initializeApp({
+      credential: admin.credential.cert(serviceAccount),
+      projectId: FIREBASE_PROJECT_ID
+    });
+  }
+  walletFirestore = admin.firestore();
+  return walletFirestore;
+}
+
+function normalizeWalletLedger(value) {
+  const x = value && typeof value === 'object' ? value : {};
+  return {
+    deposits: Array.isArray(x.deposits) ? x.deposits : [],
+    orders: Array.isArray(x.orders) ? x.orders : []
+  };
+}
 const SESSION_MS = 12 * 60 * 60 * 1000;
 const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
 
@@ -639,7 +670,7 @@ function currentView() {
     quickCustom: !!config.quick,
     maxBanners: MAX_BANNERS,
     storage: { mode: storage.mode, ok: storage.ok, error: storage.error, repo: storage.repo, branch: storage.branch },
-    persistent: USE_GH || !!process.env.DATA_DIR
+    persistent: !!(process.env.FIREBASE_SERVICE_ACCOUNT_FILE || process.env.FIREBASE_SERVICE_ACCOUNT_JSON)
   };
 }
 
@@ -655,28 +686,44 @@ function removeUpload(name) {
 }
 
 
-function loadWalletLedger() {
-  // One-time migration: when a Render Persistent Disk is attached, preserve the
-  // previous local wallet ledger if it is still present in the deployed folder.
-  try {
-    if (!fs.existsSync(WALLET_FILE)) {
-      const legacyWalletFile = path.join(ROOT_DIR, 'data', 'wallet-ledger.json');
-      if (path.resolve(legacyWalletFile) !== path.resolve(WALLET_FILE) && fs.existsSync(legacyWalletFile)) {
-        fs.mkdirSync(DATA_DIR, { recursive: true });
-        fs.copyFileSync(legacyWalletFile, WALLET_FILE, fs.constants.COPYFILE_EXCL);
+async function loadWalletLedger() {
+  const db = getWalletFirestore();
+  const ref = db.collection('walletData').doc('ledger');
+  const snap = await ref.get();
+  if (snap.exists) return normalizeWalletLedger(snap.data());
+
+  // One-time import if a previous local wallet-ledger.json is available.
+  let initial = { deposits: [], orders: [] };
+  const legacyPaths = [
+    WALLET_FILE,
+    path.join(ROOT_DIR, 'data', 'wallet-ledger.json'),
+    process.env.DATA_DIR ? path.join(path.resolve(process.env.DATA_DIR), 'wallet-ledger.json') : ''
+  ].filter(Boolean);
+  for (const legacyPath of legacyPaths) {
+    try {
+      const old = JSON.parse(fs.readFileSync(legacyPath, 'utf8'));
+      initial = normalizeWalletLedger(old);
+      if (initial.deposits.length || initial.orders.length) {
+        console.log('Wallet ledger migration source found:', legacyPath);
+        break;
       }
-    }
-  } catch (e) {
-    console.error('Wallet ledger migration failed:', e.message);
+    } catch (_) {}
   }
-  try { const x = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf8')); return x && typeof x === 'object' && Array.isArray(x.deposits) ? Object.assign({ orders: [] }, x, { orders: Array.isArray(x.orders) ? x.orders : [] }) : { deposits: [], orders: [] }; }
-  catch (_) { return { deposits: [], orders: [] }; }
+
+  return db.runTransaction(async function (tx) {
+    const current = await tx.get(ref);
+    if (current.exists) return normalizeWalletLedger(current.data());
+    tx.create(ref, Object.assign({}, initial, { migratedAt: Date.now() }));
+    return initial;
+  });
 }
-function saveWalletLedger(ledger) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
-  const tmp = WALLET_FILE + '.tmp';
-  fs.writeFileSync(tmp, JSON.stringify(ledger, null, 2), { mode: 0o600 });
-  fs.renameSync(tmp, WALLET_FILE);
+async function saveWalletLedger(ledger) {
+  const db = getWalletFirestore();
+  const safe = normalizeWalletLedger(ledger);
+  await db.collection('walletData').doc('ledger').set(
+    Object.assign({}, safe, { updatedAt: Date.now() }),
+    { merge: false }
+  );
 }
 
 // Send an order notification to the admin's private Telegram chat.
@@ -772,7 +819,7 @@ async function walletApi(req, res, pathname) {
   let user;
   try { user = await verifyFirebaseUser(req); }
   catch (e) { return sendJson(res, 401, { error: e.message || 'লগইন করুন' }); }
-  const ledger = loadWalletLedger();
+  const ledger = await loadWalletLedger();
   if (req.method === 'GET' && pathname === '/api/wallet/me') {
     const mine = ledger.deposits.filter(x => x.uid === user.uid).sort((a,b) => b.createdAt - a.createdAt);
     const myOrders = (ledger.orders || []).filter(x => x.uid === user.uid).sort((a,b) => b.createdAt - a.createdAt);
@@ -804,7 +851,7 @@ async function walletApi(req, res, pathname) {
     const duplicateOrder = ledger.orders.some(x => String(x.trx || '').trim().toUpperCase().replace(/\s+/g, '') === trx);
     if (duplicateDeposit || duplicateOrder) return sendJson(res, 409, { error: 'এই Transaction ID আগে ব্যবহার করা হয়েছে' });
     const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, gameUid, productKey, product: matched.name || product, price, paymentType: 'manual', paymentMethod, trx, status: 'pending', createdAt: Date.now(), updatedAt: Date.now(), note: 'পেমেন্ট Transaction ID অ্যাডমিন যাচাই অপেক্ষমাণ' };
-    ledger.orders.push(rec); saveWalletLedger(ledger);
+    ledger.orders.push(rec); await saveWalletLedger(ledger);
     return sendJson(res, 201, { ok: true, message: 'অর্ডার আবেদন জমা হয়েছে। Transaction ID যাচাই শেষে অ্যাডমিন অর্ডার Processing করবে।', order: rec });
   }
   if (req.method === 'POST' && pathname === '/api/wallet/order') {
@@ -824,7 +871,7 @@ async function walletApi(req, res, pathname) {
     if (walletBalance(ledger, user.uid) < price) return sendJson(res, 400, { error: 'আপনার Wallet-এ পর্যাপ্ত টাকা নেই' });
     const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, gameUid: uid, productKey, product: matched.name || product, price, status: 'pending', createdAt: Date.now(), updatedAt: Date.now(), note: 'অ্যাডমিন যাচাই/ডেলিভারি অপেক্ষমাণ' };
     ledger.orders = ledger.orders || [];
-    ledger.orders.push(rec); saveWalletLedger(ledger);
+    ledger.orders.push(rec); await saveWalletLedger(ledger);
     return sendJson(res, 201, { ok: true, message: 'অর্ডার গ্রহণ করা হয়েছে। ডেলিভারি নিশ্চিত না হওয়া পর্যন্ত My Orders-এ Pending দেখাবে।', order: rec, balance: walletBalance(ledger, user.uid) });
   }
   if (req.method === 'POST' && pathname === '/api/wallet/deposit') {
@@ -838,7 +885,7 @@ async function walletApi(req, res, pathname) {
     if (ledger.deposits.some(x => String(x.trx || '').trim().toUpperCase().replace(/\s+/g, '') === trx)) return sendJson(res, 409, { error: 'এই Transaction ID আগে জমা দেওয়া হয়েছে' });
     const rec = { id: crypto.randomBytes(12).toString('hex'), uid: user.uid, email: user.email, name: user.name, amount, method, trx, status: 'pending', createdAt: Date.now(), reviewedAt: null, note: '' };
     ledger.deposits.push(rec);
-    saveWalletLedger(ledger);
+    await saveWalletLedger(ledger);
     return sendJson(res, 201, { ok: true, message: 'আবেদন জমা হয়েছে। অ্যাডমিন যাচাই করার পর ব্যালেন্স যোগ হবে।', deposit: { id: rec.id, amount, method, trx, status: rec.status, createdAt: rec.createdAt } });
   }
   return sendJson(res, 404, { error: 'Not found' });
@@ -849,7 +896,7 @@ async function handleApi(req, res, pathname) {
     if (pathname.startsWith('/api/wallet/')) return await walletApi(req, res, pathname);
     if (pathname.startsWith('/api/admin/orders')) {
       if (!isAuthed(req)) return sendJson(res, 401, { error: 'অ্যাডমিন লগইন করুন' });
-      const ledger = loadWalletLedger(); ledger.orders = ledger.orders || [];
+      const ledger = await loadWalletLedger(); ledger.orders = ledger.orders || [];
       if (req.method === 'GET' && pathname === '/api/admin/orders') return sendJson(res, 200, { orders: ledger.orders.slice().sort((a,b) => b.createdAt-a.createdAt) });
       const m = /^\/api\/admin\/orders\/([a-f0-9]+)\/(processing|completed|rejected)$/.exec(pathname);
       if (req.method === 'POST' && m) {
@@ -858,13 +905,13 @@ async function handleApi(req, res, pathname) {
         if (item.status === 'rejected' || item.status === 'completed') return sendJson(res, 409, { error: 'এই অর্ডার আগেই নিষ্পত্তি হয়েছে' });
         const body = await readJson(req, 4096);
         item.status = m[2]; item.updatedAt = Date.now(); item.note = String(body.note || '').trim().slice(0,200);
-        saveWalletLedger(ledger);
+        await saveWalletLedger(ledger);
         let telegramNotified = !!item.telegramNotifiedAt;
         if (m[2] === 'processing' && !telegramNotified) {
           telegramNotified = await sendTelegramOrderNotice(item);
           if (telegramNotified) {
             item.telegramNotifiedAt = Date.now();
-            saveWalletLedger(ledger);
+            await saveWalletLedger(ledger);
           }
         }
         return sendJson(res, 200, { ok: true, order: item, balance: walletBalance(ledger, item.uid), telegramNotified });
@@ -873,7 +920,7 @@ async function handleApi(req, res, pathname) {
     }
     if (pathname.startsWith('/api/admin/deposits')) {
       if (!isAuthed(req)) return sendJson(res, 401, { error: 'অ্যাডমিন লগইন করুন' });
-      const ledger = loadWalletLedger();
+      const ledger = await loadWalletLedger();
       if (req.method === 'GET' && pathname === '/api/admin/deposits') return sendJson(res, 200, { deposits: ledger.deposits.slice().sort((a,b) => b.createdAt-a.createdAt) });
       const m = /^\/api\/admin\/deposits\/([a-f0-9]+)\/(approve|reject)$/.exec(pathname);
       if (req.method === 'POST' && m) {
@@ -883,7 +930,7 @@ async function handleApi(req, res, pathname) {
         const body = await readJson(req, 4096);
         item.status = m[2] === 'approve' ? 'approved' : 'rejected';
         item.reviewedAt = Date.now(); item.note = String(body.note || '').trim().slice(0, 200);
-        saveWalletLedger(ledger);
+        await saveWalletLedger(ledger);
         return sendJson(res, 200, { ok: true, deposit: item, balance: walletBalance(ledger, item.uid) });
       }
       return sendJson(res, 404, { error: 'Not found' });
@@ -1054,6 +1101,9 @@ async function handleApi(req, res, pathname) {
   } catch (e) {
     if (e && e.message === 'too_large') return sendJson(res, 413, { error: 'ডাটা অনেক বড়' });
     if (e && e.message === 'bad_json') return sendJson(res, 400, { error: 'ভুল ডাটা' });
+    if (/Firebase service account|Firestore|Firebase service account key/i.test((e && e.message) || '')) {
+      return sendJson(res, 503, { error: (e && e.message) || 'Firestore সংযোগ করা যাচ্ছে না' });
+    }
     return sendJson(res, 400, { error: (e && e.message) || 'কিছু একটা সমস্যা হয়েছে' });
   }
 }
@@ -1095,6 +1145,17 @@ function handleShop2TopupWebhook(req, res) {
   });
 }
 
+let walletApiQueue = Promise.resolve();
+function dispatchApi(req, res, pathname) {
+  const needsSerialAccess = pathname.startsWith('/api/wallet/') ||
+    pathname.startsWith('/api/admin/orders') ||
+    pathname.startsWith('/api/admin/deposits');
+  if (!needsSerialAccess) return handleApi(req, res, pathname);
+  const task = walletApiQueue.then(function () { return handleApi(req, res, pathname); });
+  walletApiQueue = task.catch(function () {});
+  return task;
+}
+
 function handle(req, res) {
   let pathname;
   try {
@@ -1105,7 +1166,7 @@ function handle(req, res) {
   }
 
   if (pathname.startsWith('/api/')) {
-    return handleApi(req, res, pathname);
+    return dispatchApi(req, res, pathname);
   }
 
   if (pathname === '/admin-money' || pathname === '/admin-money/') {
