@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const zlib = require('zlib');
+const os = require('os');
 const shop2topupTest = require('./shop2topup-test');
 const shop2topupSimOrders = new Map();
 
@@ -17,12 +18,14 @@ const PORT = process.env.PORT || 3000;
 const ROOT_DIR = __dirname;
 
 const ADMIN_PASSWORD = process.env['FFX-PASS'] || process.env.FFX_PASS || '';
-// Render Persistent Disk: set DATA_DIR=/var/data and mount the disk at /var/data.
-// Keep the local ./data fallback for development outside Render.
+// Wallet data must live on Render Persistent Disk (DATA_DIR=/var/data).
+// When GitHub sync is enabled, its temporary config/upload cache stays in /tmp
+// so GitHub sync does not try to create folders on the wallet disk.
 const DEFAULT_DATA_DIR = process.env.RENDER ? '/var/data' : path.join(ROOT_DIR, 'data');
 const DATA_DIR = path.resolve(process.env.DATA_DIR || DEFAULT_DATA_DIR);
-const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
-const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
+const CACHE_DIR = USE_GH ? path.join(os.tmpdir(), 'siamtopup-cache') : DATA_DIR;
+const UPLOAD_DIR = path.join(CACHE_DIR, 'uploads');
+const CONFIG_FILE = path.join(CACHE_DIR, 'config.json');
 const WALLET_FILE = path.join(DATA_DIR, 'wallet-ledger.json');
 const FIREBASE_PROJECT_ID = 'siam-123fd';
 let firebaseCerts = null, firebaseCertExpiry = 0;
