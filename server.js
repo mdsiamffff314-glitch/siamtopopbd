@@ -17,7 +17,10 @@ const PORT = process.env.PORT || 3000;
 const ROOT_DIR = __dirname;
 
 const ADMIN_PASSWORD = process.env['FFX-PASS'] || process.env.FFX_PASS || '';
-const DATA_DIR = path.resolve(process.env.DATA_DIR || path.join(ROOT_DIR, 'data'));
+// Render Persistent Disk: set DATA_DIR=/var/data and mount the disk at /var/data.
+// Keep the local ./data fallback for development outside Render.
+const DEFAULT_DATA_DIR = process.env.RENDER ? '/var/data' : path.join(ROOT_DIR, 'data');
+const DATA_DIR = path.resolve(process.env.DATA_DIR || DEFAULT_DATA_DIR);
 const UPLOAD_DIR = path.join(DATA_DIR, 'uploads');
 const CONFIG_FILE = path.join(DATA_DIR, 'config.json');
 const WALLET_FILE = path.join(DATA_DIR, 'wallet-ledger.json');
@@ -650,6 +653,19 @@ function removeUpload(name) {
 
 
 function loadWalletLedger() {
+  // One-time migration: when a Render Persistent Disk is attached, preserve the
+  // previous local wallet ledger if it is still present in the deployed folder.
+  try {
+    if (!fs.existsSync(WALLET_FILE)) {
+      const legacyWalletFile = path.join(ROOT_DIR, 'data', 'wallet-ledger.json');
+      if (path.resolve(legacyWalletFile) !== path.resolve(WALLET_FILE) && fs.existsSync(legacyWalletFile)) {
+        fs.mkdirSync(DATA_DIR, { recursive: true });
+        fs.copyFileSync(legacyWalletFile, WALLET_FILE, fs.constants.COPYFILE_EXCL);
+      }
+    }
+  } catch (e) {
+    console.error('Wallet ledger migration failed:', e.message);
+  }
   try { const x = JSON.parse(fs.readFileSync(WALLET_FILE, 'utf8')); return x && typeof x === 'object' && Array.isArray(x.deposits) ? Object.assign({ orders: [] }, x, { orders: Array.isArray(x.orders) ? x.orders : [] }) : { deposits: [], orders: [] }; }
   catch (_) { return { deposits: [], orders: [] }; }
 }
