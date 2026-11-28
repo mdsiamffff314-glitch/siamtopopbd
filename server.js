@@ -1039,11 +1039,42 @@ async function handleApi(req, res, pathname) {
   }
 }
 
+// Webhook validation must not wait for optional GitHub/storage initialization.
 const server = http.createServer((req, res) => {
+  let requestPath = '';
+  try { requestPath = decodeURI((req.url || '/').split('?')[0]).replace(/\/+$/, '') || '/'; }
+  catch (_) { res.writeHead(400); return res.end('Bad Request'); }
+  if (requestPath === '/webhooks/shop2topup') return handleShop2TopupWebhook(req, res);
   ready.then(function () { handle(req, res); }).catch(function () {
     try { res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' }); res.end('500 Internal Server Error'); } catch (e) {}
   });
 });
+
+// Reachability acknowledgement only; unsigned events are never acted upon.
+function handleShop2TopupWebhook(req, res) {
+  const method = req.method || 'GET';
+  if (method === 'GET' || method === 'HEAD') {
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+    return res.end(method === 'HEAD' ? undefined : JSON.stringify({ success: true, endpoint: 'shop2topup-webhook', ready: true, processing: false }));
+  }
+  if (method !== 'POST') {
+    res.writeHead(405, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Allow': 'GET, HEAD, POST' });
+    return res.end(JSON.stringify({ success: false, error: 'Method Not Allowed' }));
+  }
+  let received = 0, tooLarge = false;
+  req.on('data', chunk => { received += chunk.length; if (received > 1024 * 1024) tooLarge = true; });
+  req.on('end', () => {
+    if (res.writableEnded) return;
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' });
+    res.end(JSON.stringify({ success: true, received: true, accepted: !tooLarge, processed: false, message: 'Webhook endpoint reachable; event processing is not enabled' }));
+  });
+  req.on('error', () => {
+    if (!res.headersSent) {
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
+      res.end(JSON.stringify({ success: true, received: false, processed: false }));
+    }
+  });
+}
 
 function handle(req, res) {
   let pathname;
@@ -1052,34 +1083,6 @@ function handle(req, res) {
   } catch (e) {
     res.writeHead(400, { 'Content-Type': 'text/plain; charset=utf-8' });
     return res.end('400 Bad Request');
-  }
-
-  // Shop2Topup webhook URL validation endpoint.
-  // Acknowledges reachability checks only; it does not trust payloads or change orders.
-  // Event processing requires the provider's documented signature verification.
-  if (pathname === '/webhooks/shop2topup') {
-    if (req.method !== 'POST') {
-      res.writeHead(405, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Allow': 'POST' });
-      return res.end(JSON.stringify({ success: false, error: 'Method Not Allowed' }));
-    }
-    let received = 0;
-    let tooLarge = false;
-    req.on('data', chunk => { received += chunk.length; if (received > 64 * 1024) tooLarge = true; });
-    req.on('end', () => {
-      if (tooLarge) {
-        res.writeHead(413, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-        return res.end(JSON.stringify({ success: false, error: 'Payload too large' }));
-      }
-      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-      res.end(JSON.stringify({ success: true, received: true, message: 'Webhook endpoint reachable; event not processed' }));
-    });
-    req.on('error', () => {
-      if (!res.headersSent) {
-        res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' });
-        res.end(JSON.stringify({ success: false, error: 'Request read failed' }));
-      }
-    });
-    return;
   }
 
   if (pathname.startsWith('/api/')) {

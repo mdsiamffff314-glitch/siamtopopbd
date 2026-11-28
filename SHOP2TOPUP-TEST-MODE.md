@@ -24,3 +24,10 @@ The existing site package labels/prices are not yet verified against Shop2Topup 
 - `POST /webhooks/shop2topup` now returns HTTP 200 for provider URL-validation POSTs (payload limit: 64 KiB).
 - This is a reachability acknowledgement only. It deliberately does not update orders, wallet balances, or delivery state.
 - Do not treat this as completed webhook integration. Before processing events, implement the exact Shop2Topup signature/secret verification and event schema from its Webhooks documentation, plus idempotency and order-state checks.
+
+
+## Validation endpoint reliability update
+- Webhook requests are handled before optional GitHub/storage initialization, preventing storage startup delays from timing out provider validation.
+- POST validation probes receive HTTP 200, including empty or non-JSON probe bodies.
+- GET/HEAD diagnostics, trailing slashes, and query strings are supported.
+- This remains reachability-only; no signature verification, order mutation, wallet change, or delivery occurs until the official provider event/signature contract is implemented.
